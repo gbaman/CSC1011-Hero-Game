@@ -1,6 +1,10 @@
 package csc1011;
 
 import java.awt.EventQueue;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.RenderingHints;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -20,6 +24,7 @@ import javax.swing.ImageIcon;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -59,9 +64,9 @@ public class MainMenu extends JFrame {
 	JProgressBar progressBarAction;
 	JLabel lblCharImageGame;
 	JLabel lblCharName;
-	ImageIcon imgBat = new ImageIcon("/Users/andrew/Downloads/The_Batman.jpg");
-	ImageIcon imgBatSleep = new ImageIcon("/Users/andrew/Downloads/The_Batman_Sleeping.jpg");
-	ImageIcon imgJoke = new ImageIcon("/Users/andrew/Downloads/Mortal_Kombat_Joker.jpg");
+	ImageIcon imgBat = new ImageIcon(getClass().getResource("/The_Batman.jpg"));
+	ImageIcon imgBatSleep = new ImageIcon(getClass().getResource("/The_Batman_Sleeping.jpg"));
+	ImageIcon imgJoke = new ImageIcon(getClass().getResource("/Mortal_Kombat_Joker.jpg"));
 	int startActionLevel = 60;
 	JButton btnSleep;
 	JButton btnGenCrime;
@@ -69,7 +74,7 @@ public class MainMenu extends JFrame {
 	JLabel lblSleeping;
 	Timer timer;
 	private int sleepCounter;
-
+	
 	private int getRandom(int min, int max){
 		Random random = new Random();
 		return random.nextInt(max - min) + min;
@@ -78,6 +83,50 @@ public class MainMenu extends JFrame {
 		Random random = new Random();
 		return random.nextBoolean();
 	}
+	
+	//private ImageIcon resizeImage(ImageIcon icon, JLabel lbl){
+		//Image img = icon.getImage(); 
+		//BufferedImage bi = new BufferedImage(img.getWidth(null), img.getHeight(null), BufferedImage.TYPE_INT_ARGB); 
+		//Graphics g = bi.createGraphics(); 
+		
+		//icon.paintIcon(null, g, 0,0);
+	    //g.dispose();
+	    //BufferedImage resizedimage=setSize(bi,lbl.getWidth(), lbl.getHeight());
+	    //ImageIcon newIcon=new ImageIcon(resizedimage);
+		
+		
+		//g.drawImage(img, 0, 0, lbl.getWidth(), lbl.getHeight(), null); 
+		//g.drawImage(img, 0, 0, WIDTH, HEIGHT, null); 
+		//ImageIcon newIcon = new ImageIcon(bi); 
+		//return newIcon;
+	//}
+	
+	private ImageIcon resizeImage(ImageIcon icon, JLabel lbl){
+	/*	Image img = icon.getImage(); 
+		int w = lbl.getWidth();
+		int h = lbl.getHeight();
+		BufferedImage src = new BufferedImage(img.getWidth(null), img.getHeight(null), BufferedImage.TYPE_INT_ARGB);
+	    int finalw = w;
+	    int finalh = h;
+	    double factor = 1.0d;
+	    if(src.getWidth() > src.getHeight()){
+	        factor = ((double)src.getHeight()/(double)src.getWidth());
+	        finalh = (int)(finalw * factor);                
+	    }else{
+	        factor = ((double)src.getWidth()/(double)src.getHeight());
+	        finalw = (int)(finalh * factor);
+	    }   
+
+	    BufferedImage resizedImg = new BufferedImage(finalw, finalh, BufferedImage.TRANSLUCENT);
+	    Graphics2D g2 = resizedImg.createGraphics();
+	    g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+	    g2.drawImage(src, 0, 0, finalw, finalh, null);
+	    g2.dispose();
+	    ImageIcon newIcon=new ImageIcon(resizedImg);
+	    return newIcon; */
+		return icon;
+	}
+	
 
 	public void setEnergy(int value){
 		this.progressBarEnergy.setValue(value);
@@ -88,7 +137,7 @@ public class MainMenu extends JFrame {
 	}
 
 	public void setCharImageGame(ImageIcon imgBat2){
-		this.lblCharImageGame.setIcon(imgBat2);
+		this.lblCharImageGame.setIcon(resizeImage(imgBat2, this.lblCharImageGame));
 	}
 
 	public int getAction(){
@@ -156,6 +205,7 @@ public class MainMenu extends JFrame {
 		this.lblSleeping.setEnabled(true);
 		this.btnSleep.setEnabled(false);
 		this.btnGenCrime.setEnabled(false);
+		this.lblCharImageGame.setIcon(imgBatSleep);
 		this.deductEnergy = false;
 		this.sleepCounter = 5;
 		this.lblSleeping.setText("Sleeping.. " + this.sleepCounter);
@@ -183,6 +233,7 @@ public class MainMenu extends JFrame {
 	
 	public void endSleep(){
 		this.lblSleeping.setText("");
+		this.lblCharImageGame.setIcon(imgBat);
 		this.deductEnergy = true;
 		this.btnSleep.setEnabled(true);
 		this.btnGenCrime.setEnabled(true);
@@ -238,8 +289,8 @@ public class MainMenu extends JFrame {
 		panelMenuL.add(btnVillian);
 
 		final JLabel lblCharImage = new JLabel("");
-		lblCharImage.setIcon(new ImageIcon("/Users/andrew/Downloads/The_Batman.jpg"));
-		lblCharImage.setBounds(171, 2, 345, 685);
+		lblCharImage.setIcon(imgBat);
+		lblCharImage.setBounds(171, 2, 345, 566);
 		panelMenuL.add(lblCharImage);
 
 		JPanel panelGameL = new JPanel();
@@ -259,13 +310,13 @@ public class MainMenu extends JFrame {
 		
 		JLabel lblSleeping_1 = new JLabel("Hello");
 		lblSleeping_1.setFont(new Font("Lucida Grande", Font.PLAIN, 30));
-		lblSleeping_1.setBounds(494, 358, 255, 50);
+		lblSleeping_1.setBounds(529, 386, 255, 50);
 		panelGameL.add(lblSleeping_1);
 		this.lblSleeping = lblSleeping_1;
 		this.lblSleeping.setText("");
 
 		JLabel lblCharImageGame = new JLabel("");
-		lblCharImageGame.setBounds(42, 23, 312, 419);
+		lblCharImageGame.setBounds(26, 0, 345, 566);
 		panelGameL.add(lblCharImageGame);
 		this.lblCharImageGame = lblCharImageGame;
 
@@ -275,7 +326,7 @@ public class MainMenu extends JFrame {
 				GenerateCrime();
 			}
 		});
-		btnGenCrime.setBounds(42, 446, 160, 29);
+		btnGenCrime.setBounds(387, 442, 160, 29);
 		panelGameL.add(btnGenCrime);
 		this.btnGenCrime = btnGenCrime;
 
@@ -285,7 +336,7 @@ public class MainMenu extends JFrame {
 				startSleep();
 			}
 		});
-		btnSleep.setBounds(250, 446, 117, 29);
+		btnSleep.setBounds(408, 386, 117, 29);
 		panelGameL.add(btnSleep);
 		this.btnSleep = btnSleep;
 
@@ -320,7 +371,8 @@ public class MainMenu extends JFrame {
 		panelGameL.add(lblEnergy);
 		
 		JLabel lblCharName = new JLabel("");
-		lblCharName.setBounds(158, 6, 61, 16);
+		lblCharName.setFont(new Font("Lucida Grande", Font.BOLD, 16));
+		lblCharName.setBounds(469, 6, 262, 29);
 		panelGameL.add(lblCharName);
 		this.lblCharName = lblCharName;
 		btnHero.addActionListener(new ActionListener() {
