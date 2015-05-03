@@ -1,10 +1,7 @@
 package csc1011;
 
+import java.awt.Color;
 import java.awt.EventQueue;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.RenderingHints;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -24,8 +21,6 @@ import javax.swing.ImageIcon;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.image.BufferedImage;
-import java.util.ArrayList;
 import java.util.Random;
 
 import javax.swing.JProgressBar;
@@ -58,6 +53,7 @@ public class MainMenu extends JFrame {
 	int player;
 	JPanel panelGame;
 	JPanel panelMenu;
+	JPanel panelFight;
 	JProgressBar progressBarStatus;
 	Character c;
 	JProgressBar progressBarEnergy;
@@ -67,9 +63,12 @@ public class MainMenu extends JFrame {
 	ImageIcon imgBat = new ImageIcon(getClass().getResource("/The_Batman.jpg"));
 	ImageIcon imgBatSleep = new ImageIcon(getClass().getResource("/The_Batman_Sleeping.jpg"));
 	ImageIcon imgJoke = new ImageIcon(getClass().getResource("/Mortal_Kombat_Joker.jpg"));
+	ImageIcon imgBankRobber = new ImageIcon(getClass().getResource("/bank-robber.jpg")); 
+	ImageIcon goth1 = new ImageIcon(getClass().getResource("/large/gothback1.jpg"));
 	int startActionLevel = 60;
 	JButton btnSleep;
 	JButton btnGenCrime;
+	JButton btnPunch;
 	Boolean deductEnergy = true;
 	JLabel lblSleeping;
 	Timer timer;
@@ -145,6 +144,8 @@ public class MainMenu extends JFrame {
 	}
 
 	public void setAction(int value){
+		System.out.println("bob");
+		System.out.println(value);
 		this.progressBarAction.setValue(value);
 	}
 	
@@ -197,8 +198,16 @@ public class MainMenu extends JFrame {
 	}
 
 	public void runTest(){
-		Random random = new Random();
-		System.out.println(random.nextInt(2));
+		punchMiniGame();
+		System.out.println(this.panelFight.getWidth());
+		System.out.println(this.panelFight.getHeight());
+		/*JOptionPane.showInputDialog(null, "Please choose a name", "Example 1",
+		        JOptionPane.QUESTION_MESSAGE, null, new Object[] { "Amanda",
+		            "Colin", "Don", "Fred", "Gordon", "Janet", "Jay",
+		            "Joe", "Judie", "Kerstin", "Lotus", "Maciek", "Mark",
+		            "Mike", "Mulhern", "Oliver", "Peter", "Quaxo", "Rita",
+		            "Sandro", "Tim", "Will" }, "Joe");
+		            */
 	}
 	
 	public void startSleep(){
@@ -224,20 +233,28 @@ public class MainMenu extends JFrame {
 	public void checkSleep(){
 		if (this.sleepCounter == 0){
 			this.timer.stop();
-			endSleep();
+			endSleep(20);
 		}else{
-			this.sleepCounter = this.sleepCounter - 1;
-			this.lblSleeping.setText("Sleeping.. " + this.sleepCounter);
+			
+			if ((getRandom(1, 10) > 9) && ((this.getEnergy()) > 20)){
+				this.timer.stop();
+				GenerateCrime();
+				endSleep((20 - (this.sleepCounter * 5)));
+				
+			}else{
+				this.sleepCounter = this.sleepCounter - 1;
+				this.lblSleeping.setText("Sleeping.. " + this.sleepCounter);
+			}
 		}
 	}
 	
-	public void endSleep(){
+	public void endSleep(int energyAdd){
 		this.lblSleeping.setText("");
 		this.lblCharImageGame.setIcon(imgBat);
 		this.deductEnergy = true;
 		this.btnSleep.setEnabled(true);
 		this.btnGenCrime.setEnabled(true);
-		setEnergy(getEnergy() + 20);
+		setEnergy(getEnergy() + energyAdd);
 	}
 
 	public void GenerateCrime(){
@@ -249,9 +266,12 @@ public class MainMenu extends JFrame {
 			int crimeResponse = JOptionPane.showConfirmDialog(null, "A " + TheCrime.name + " is happening at " + TheCrime.CrimeLocation + ". Would you like to fight it?","A crime is being committed!", JOptionPane.YES_NO_OPTION);
 			if (crimeResponse == 0){
 				int EnergyLoss;
-				if (getRandom()){
+				int ActionGained = 0;
+				if (getRandom() || getRandom()){
+					ActionGained = 10;
 					EnergyLoss = getRandom(5, 15);
 					setEnergy(getEnergy() - EnergyLoss);
+					c.adjustAction(ActionGained);
 					JOptionPane.showMessageDialog(null, "Crime successfully stopped! You lost " + EnergyLoss + " energy!", "Crime stopped!", JOptionPane.INFORMATION_MESSAGE);
 
 				}else
@@ -259,10 +279,22 @@ public class MainMenu extends JFrame {
 					EnergyLoss = 20;
 					JOptionPane.showMessageDialog(null, "Crime stopping failed! You lost " + EnergyLoss + " energy!", "Failed!", JOptionPane.ERROR_MESSAGE);
 					setEnergy(getEnergy() - EnergyLoss);
+					c.adjustAction(-5);
 				}
 
 			}
 		}
+	}
+	
+	public void punchMiniGame(){
+		int x = getRandom(0,this.getWidth() - 100);
+		int y = getRandom(0,this.getHeight() - 100);
+		this.panelMenu.setVisible(false);
+		this.panelGame.setVisible(false);
+		this.panelFight.setVisible(true);
+		this.btnPunch.setLocation(x, y);
+		System.out.println(x);
+		System.out.println(y);
 	}
 	/**
 	 * Create the frame.
@@ -351,6 +383,7 @@ public class MainMenu extends JFrame {
 		progressBarAction.setStringPainted(true);
 		progressBarAction.setBounds(561, 92, 146, 20);
 		panelGameL.add(progressBarAction);
+		this.progressBarAction = progressBarAction;
 
 		JProgressBar progressBarEnergy = new JProgressBar();
 		progressBarEnergy.setStringPainted(true);
@@ -375,9 +408,30 @@ public class MainMenu extends JFrame {
 		lblCharName.setBounds(469, 6, 262, 29);
 		panelGameL.add(lblCharName);
 		this.lblCharName = lblCharName;
+		
+		JLabel BackgroundImg = new JLabel("");
+		BackgroundImg.setIcon(new ImageIcon(MainMenu.class.getResource("/Large/gothback1.jpg")));
+		BackgroundImg.setBounds(6, 0, 784, 568);
+		panelGameL.add(BackgroundImg);
+		
+		JPanel panelFight = new JPanel();
+		contentPane.add(panelFight, "name_1429893385711104000");
+		panelFight.setLayout(null);
+		
+		JButton btnPunch = new JButton("Punch");
+		btnPunch.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				punchMiniGame();
+			}
+		});
+		btnPunch.setBounds(507, 210, 69, 29);
+		panelFight.add(btnPunch);
+		this.panelFight = panelFight;
+		this.btnPunch = btnPunch;
 		btnHero.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				panelMenu.setVisible(false);
+				panelGame.setBackground(Color.BLUE);
 				panelGame.setVisible(true);
 				Hero player = CreateHero();
 				RunGame(player);

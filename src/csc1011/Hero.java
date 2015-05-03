@@ -7,6 +7,8 @@ public class Hero extends Character {
 	
 	MainMenu m;
 	ArrayList<Crime> CrimeList;
+	ArrayList<AvailablePlayers> Players;
+	AvailablePlayers player;
 	
 	public Hero(MainMenu m){
 		m.panelGame.setVisible(true);
@@ -37,7 +39,8 @@ public class Hero extends Character {
 		(new Thread(new EnergyCountDown(m))).start();
 		//m.setAction(m.startActionLevel);
 		this.CrimeList = CreateCrimesList();
-		
+		this.Players = definePlayers();
+		m.setAction(50);
 	}
 
 
@@ -45,5 +48,22 @@ public class Hero extends Character {
 	@Override
 	public ArrayList<Crime> getCrimeList() {
 		return this.CrimeList;
+	}
+	
+	@Override
+	public ArrayList<AvailablePlayers> definePlayers(){
+		ArrayList<AvailablePlayers> Players = new ArrayList<AvailablePlayers>();
+		Players.add(new AvailablePlayers("Batman", m.imgBat, 1, 1, 1));
+		this.player = Players.get(0);
+		return Players;
+		
+	}
+
+
+
+	@Override
+	public void adjustAction(int value) {
+		m.setAction(m.getAction() + value);
+		
 	}
 }

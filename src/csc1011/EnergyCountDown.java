@@ -14,13 +14,13 @@ public class EnergyCountDown implements Runnable {
     	System.out.println(m.getEnergy());
     	while (m.getEnergy() > 0 ){
 			try {
-				Thread.sleep(1000);
+				Thread.sleep(300);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			if (m.deductEnergy){
-				m.setEnergy(m.getEnergy() - 5);
+				m.setEnergy(m.getEnergy() - 1);
 			}
 			
 		}
