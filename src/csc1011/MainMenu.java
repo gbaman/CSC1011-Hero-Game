@@ -26,8 +26,16 @@ import java.util.Random;
 import javax.swing.JProgressBar;
 
 import java.awt.Font;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
-public class MainMenu extends JFrame {
+public class MainMenu extends JFrame implements
+java.io.Serializable {
+	
 	/**
 	 * 
 	 */
@@ -49,7 +57,9 @@ public class MainMenu extends JFrame {
 			}
 		});
 	}
-
+	
+	Boolean GameRunning;
+	Boolean BackgroundCrime;
 	int player;
 	JPanel panelGame;
 	JPanel panelMenu;
@@ -74,11 +84,11 @@ public class MainMenu extends JFrame {
 	Timer timer;
 	private int sleepCounter;
 	
-	private int getRandom(int min, int max){
+	public int getRandom(int min, int max){
 		Random random = new Random();
 		return random.nextInt(max - min) + min;
 	}
-	private Boolean getRandom(){
+	public Boolean getRandom(){
 		Random random = new Random();
 		return random.nextBoolean();
 	}
@@ -126,7 +136,15 @@ public class MainMenu extends JFrame {
 		return icon;
 	}
 	
-
+	public Boolean getBackgroundCrime() {
+		return BackgroundCrime;
+	}
+	
+	public void setBackgroundCrime(Boolean backgroundCrime) {
+		System.out.println("Setting background to " + backgroundCrime);
+		BackgroundCrime = backgroundCrime;
+	}
+	
 	public void setEnergy(int value){
 		this.progressBarEnergy.setValue(value);
 	}
@@ -144,8 +162,6 @@ public class MainMenu extends JFrame {
 	}
 
 	public void setAction(int value){
-		System.out.println("bob");
-		System.out.println(value);
 		this.progressBarAction.setValue(value);
 	}
 	
@@ -160,8 +176,58 @@ public class MainMenu extends JFrame {
 	public void RunGame(Character a){
 		this.c = a;
 		setName(askName());
+		this.GameRunning = true;
+		this.setBackgroundCrime(true);
 		
 		c.setupDisplay();
+
+	}
+	
+	public void SaveGame(){
+		try {
+			FileOutputStream f_out = new FileOutputStream("myobject.data");
+			ObjectOutputStream obj_out = new ObjectOutputStream (f_out);
+			obj_out.writeObject ( this );
+			obj_out.close();
+			
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public MainMenu LoadGame(){
+		FileInputStream f_in;
+		try {
+			f_in = new FileInputStream("myobject.data");
+			// Read object using ObjectInputStream
+			ObjectInputStream obj_in = new ObjectInputStream (f_in);
+			// Read an object
+			Object obj = obj_in.readObject();
+
+			if (obj instanceof MainMenu)
+			{
+				// Cast object to a Vector
+				MainMenu vec = (MainMenu) obj;
+				obj_in.close();
+				return vec;
+
+				// Do something with vector....
+			}
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 
 	}
 	
@@ -198,9 +264,11 @@ public class MainMenu extends JFrame {
 	}
 
 	public void runTest(){
-		punchMiniGame();
-		System.out.println(this.panelFight.getWidth());
-		System.out.println(this.panelFight.getHeight());
+		//SaveGame();
+		LoadGame();
+		//punchMiniGame();
+		//System.out.println(this.panelFight.getWidth());
+		///System.out.println(this.panelFight.getHeight());
 		/*JOptionPane.showInputDialog(null, "Please choose a name", "Example 1",
 		        JOptionPane.QUESTION_MESSAGE, null, new Object[] { "Amanda",
 		            "Colin", "Don", "Fred", "Gordon", "Janet", "Jay",
@@ -211,11 +279,12 @@ public class MainMenu extends JFrame {
 	}
 	
 	public void startSleep(){
+		this.setBackgroundCrime(false);
 		this.lblSleeping.setEnabled(true);
 		this.btnSleep.setEnabled(false);
 		this.btnGenCrime.setEnabled(false);
 		this.lblCharImageGame.setIcon(imgBatSleep);
-		this.deductEnergy = false;
+		this.setDeductEnergy(false); 
 		this.sleepCounter = 5;
 		this.lblSleeping.setText("Sleeping.. " + this.sleepCounter);
 		Timer timer = new Timer(1000, new ActionListener() {
@@ -251,18 +320,22 @@ public class MainMenu extends JFrame {
 	public void endSleep(int energyAdd){
 		this.lblSleeping.setText("");
 		this.lblCharImageGame.setIcon(imgBat);
-		this.deductEnergy = true;
+		this.setDeductEnergy(true);
+		this.setBackgroundCrime(true);
 		this.btnSleep.setEnabled(true);
 		this.btnGenCrime.setEnabled(true);
 		setEnergy(getEnergy() + energyAdd);
 	}
 
 	public void GenerateCrime(){
+		this.setBackgroundCrime(false);
 		if (getEnergy() < 20){
 			JOptionPane.showMessageDialog(null, "Your energy is below 20, you must sleep!", "Failed!", JOptionPane.ERROR_MESSAGE);
+			this.setBackgroundCrime(true);
 		}
 		else{
 			Crime TheCrime = c.getRandomCrime(c.getCrimeList());
+			this.setDeductEnergy(false); 
 			int crimeResponse = JOptionPane.showConfirmDialog(null, "A " + TheCrime.name + " is happening at " + TheCrime.CrimeLocation + ". Would you like to fight it?","A crime is being committed!", JOptionPane.YES_NO_OPTION);
 			if (crimeResponse == 0){
 				int EnergyLoss;
@@ -283,9 +356,17 @@ public class MainMenu extends JFrame {
 				}
 
 			}
+			this.setDeductEnergy(true); 
+			this.setBackgroundCrime(true);
 		}
 	}
 	
+	public Boolean getDeductEnergy() {
+		return deductEnergy;
+	}
+	public void setDeductEnergy(Boolean deductEnergy) {
+		this.deductEnergy = deductEnergy;
+	}
 	public void punchMiniGame(){
 		int x = getRandom(0,this.getWidth() - 100);
 		int y = getRandom(0,this.getHeight() - 100);

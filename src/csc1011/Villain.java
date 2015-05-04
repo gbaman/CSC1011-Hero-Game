@@ -29,4 +29,10 @@ public class Villain extends Character {
 		// TODO Auto-generated method stub
 		
 	}
+	@Override
+	public void checkAction() {
+		// TODO Auto-generated method stub
+		
+	}
+	
 }

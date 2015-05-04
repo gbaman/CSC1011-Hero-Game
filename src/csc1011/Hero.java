@@ -2,6 +2,8 @@ package csc1011;
 
 import java.util.ArrayList;
 
+import javax.swing.JOptionPane;
+
 
 public class Hero extends Character {
 	
@@ -37,10 +39,12 @@ public class Hero extends Character {
 	public void setupDisplay() {
 		m.setCharImageGame(m.imgBat);
 		(new Thread(new EnergyCountDown(m))).start();
+		(new Thread(new GameBackgroundThread(m))).start();
 		//m.setAction(m.startActionLevel);
 		this.CrimeList = CreateCrimesList();
 		this.Players = definePlayers();
 		m.setAction(50);
+		m.progressBarStatus.setString("Hero");
 	}
 
 
@@ -60,10 +64,24 @@ public class Hero extends Character {
 	}
 
 
-
 	@Override
 	public void adjustAction(int value) {
 		m.setAction(m.getAction() + value);
+		checkAction();
+		
+	}
+
+	@Override
+	public void checkAction() {
+		if (m.getAction() > 99){
+			JOptionPane.showMessageDialog(null, "You have won!", "Victory!", JOptionPane.ERROR_MESSAGE);
+			m.displayEnd();
+		}else{
+			if (m.getAction() > 80){
+				m.progressBarStatus.setString("Superhero");
+			}
+		}
+		
 		
 	}
 }

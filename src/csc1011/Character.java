@@ -17,6 +17,8 @@ public abstract class Character {
 	public abstract ArrayList<Crime> getCrimeList();
 	
 	public abstract void adjustAction(int value);
+	
+	public abstract void checkAction();
 
 	public Crime getRandomCrime(ArrayList<Crime> CrimeList){
 		Random random = new Random();
