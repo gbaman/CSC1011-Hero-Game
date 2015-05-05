@@ -325,7 +325,7 @@ java.io.Serializable {
 	
 	public void dialogRun(String DialogType){
 		try {
-			CustomDialog dialog = new CustomDialog();
+			CustomDialog dialog = new CustomDialog(this);
 			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 			switch (DialogType) {
 			case "CrimeDialog" : dialog.CrimeDialog(); break;

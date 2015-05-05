@@ -21,22 +21,10 @@ import javax.swing.JLabel;
 
 public class CustomDialog extends JDialog {
 
-	/**
-	 * Launch the application.
-	 */
-	//public static void main(String[] args) {
-	public static void main() {
-		try {
-			CustomDialog dialog = new CustomDialog();
-			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-			dialog.setVisible(true);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
 	JLabel lblCrimeIcon;
 	JLabel lblACrimeIs;
 	JPanel PanelCrimeGen;
+	MainMenu m;
 
 	public void CrimeDialog(){
 		System.out.println("Crime Dialog!");
@@ -45,17 +33,15 @@ public class CustomDialog extends JDialog {
 		this.setTitle("Crime happening!");
 		Thread t = new Thread(new DialogClose(this, 5, "<html>\nA crime is being commited at the docks! <br>\nWould you like to fight it?"));
 		t.start();
-		this.PanelCrimeGen.setVisible(true);
-
-		
-		
+		this.PanelCrimeGen.setVisible(true);	
 	}
 	
 	
 	/**
 	 * Create the dialog.
 	 */
-	public CustomDialog() {
+	public CustomDialog(MainMenu m) {
+		this.m = m;
 		this.setModal(true);
 		setBounds(100, 100, 450, 300);
 		this.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
