@@ -10,6 +10,7 @@ public class GameBackgroundThread implements Runnable {
 	
 	@Override
 	public void run() {
+		System.out.println("Action " + m.getAction());
 		while (m.GameRunning == true){
 			try {
 				Thread.sleep(1000);
@@ -20,6 +21,7 @@ public class GameBackgroundThread implements Runnable {
 			if (m.getEnergy() > 20){
 				if (m.getBackgroundCrime() == true){
 					int rand = m.getRandom(1,100);
+					System.out.println("Running random gen " + rand);
 					if (rand > 85){
 						System.out.println(rand);
 						m.GenerateCrime();

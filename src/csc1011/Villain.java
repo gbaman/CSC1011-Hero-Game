@@ -34,5 +34,10 @@ public class Villain extends Character {
 		// TODO Auto-generated method stub
 		
 	}
+	@Override
+	public void ResetM(MainMenu a) {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }

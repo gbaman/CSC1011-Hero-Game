@@ -2,7 +2,8 @@ package csc1011;
 
 import javax.swing.ImageIcon;
 
-public class AvailablePlayers {
+public class AvailablePlayers implements
+java.io.Serializable {
 
 	
 	public AvailablePlayers(String name, ImageIcon image, int speed, int health,

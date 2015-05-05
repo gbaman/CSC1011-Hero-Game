@@ -1,6 +1,7 @@
 package csc1011;
 
-public class Crime {
+public class Crime implements
+java.io.Serializable {
 
 	public Crime(String name, String commitedBy,
 			CrimeSeverityLevel crimeSeverity,

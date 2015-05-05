@@ -11,13 +11,14 @@ public class Hero extends Character {
 	ArrayList<Crime> CrimeList;
 	ArrayList<AvailablePlayers> Players;
 	AvailablePlayers player;
-	
 	public Hero(MainMenu m){
 		m.panelGame.setVisible(true);
 		this.m = m;
 	}
 	
-	
+	public void ResetM(MainMenu a){
+		this.m = a;
+	}
 	
 	private ArrayList<Crime> CreateCrimesList(){
 		ArrayList<Crime> CrimeList = new ArrayList<Crime>();
@@ -38,12 +39,16 @@ public class Hero extends Character {
 	@Override
 	public void setupDisplay() {
 		m.setCharImageGame(m.imgBat);
-		(new Thread(new EnergyCountDown(m))).start();
-		(new Thread(new GameBackgroundThread(m))).start();
+		System.out.println(this.Name);
+		if (this.Name == null){
+			m.setName(m.askName());
+		}else{
+			m.setName(this.Name);
+		}
+		System.out.println(m.lblCharImageGame.getIcon());
 		//m.setAction(m.startActionLevel);
 		this.CrimeList = CreateCrimesList();
 		this.Players = definePlayers();
-		m.setAction(50);
 		m.progressBarStatus.setString("Hero");
 	}
 

@@ -3,6 +3,7 @@ package csc1011;
 import java.awt.Color;
 import java.awt.EventQueue;
 
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -45,19 +46,22 @@ java.io.Serializable {
 	/**
 	 * Launch the application.
 	 */
-	public static void main(String[] args) {
+	//public static void main(String[] args) {
+	public static void main1() {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
 					MainMenu frame = new MainMenu();
 					frame.setVisible(true);
+					frame.frame = frame;
+					
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
 		});
 	}
-	
+	MainMenu frame;
 	Boolean GameRunning;
 	Boolean BackgroundCrime;
 	int player;
@@ -147,6 +151,8 @@ java.io.Serializable {
 	
 	public void setEnergy(int value){
 		this.progressBarEnergy.setValue(value);
+		System.out.println(value);
+		System.out.println(this.getEnergy());
 	}
 
 	public int getEnergy(){
@@ -175,10 +181,11 @@ java.io.Serializable {
 
 	public void RunGame(Character a){
 		this.c = a;
-		setName(askName());
 		this.GameRunning = true;
 		this.setBackgroundCrime(true);
-		
+		(new Thread(new EnergyCountDown(this))).start();
+		(new Thread(new GameBackgroundThread(this))).start();
+		c.ResetM(this);
 		c.setupDisplay();
 
 	}
@@ -187,7 +194,9 @@ java.io.Serializable {
 		try {
 			FileOutputStream f_out = new FileOutputStream("myobject.data");
 			ObjectOutputStream obj_out = new ObjectOutputStream (f_out);
-			obj_out.writeObject ( this );
+			c.setSaveActionBar(this.getAction());
+			c.setSaveEnergyBar(this.getEnergy());
+			obj_out.writeObject (c);
 			obj_out.close();
 			
 		} catch (FileNotFoundException e) {
@@ -199,23 +208,25 @@ java.io.Serializable {
 		}
 	}
 	
-	public MainMenu LoadGame(){
+	public void LoadGame(){
 		FileInputStream f_in;
 		try {
 			f_in = new FileInputStream("myobject.data");
-			// Read object using ObjectInputStream
 			ObjectInputStream obj_in = new ObjectInputStream (f_in);
-			// Read an object
 			Object obj = obj_in.readObject();
 
-			if (obj instanceof MainMenu)
+			if (obj instanceof Character)
 			{
-				// Cast object to a Vector
-				MainMenu vec = (MainMenu) obj;
+				Character player = (Character) obj;
 				obj_in.close();
-				return vec;
-
-				// Do something with vector....
+				this.setAction(player.getSaveActionBar());
+				this.setEnergy(player.getSaveEnergyBar());
+				System.out.println(player.getSaveActionBar());
+				System.out.println("Hello");
+				this.setDeductEnergy(true);
+				panelMenu.setVisible(false);
+				panelGame.setVisible(true);
+				RunGame(player);
 			}
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -227,15 +238,16 @@ java.io.Serializable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return null;
 
 	}
 	
 	public String askName(){
 		Boolean notDone = true;
 		String name = "";
+		this.setDeductEnergy(false);
 		while (notDone){
 			name = JOptionPane.showInputDialog(null,"Enter a name for your character", "Name", JOptionPane.PLAIN_MESSAGE);
+			c.setName(name);
 			if (name.length() == 0){
 				JOptionPane.showMessageDialog(null, "You must enter a name!", "Failed!", JOptionPane.ERROR_MESSAGE);
 			}
@@ -244,16 +256,21 @@ java.io.Serializable {
 			}
 		
 		}
+		this.setDeductEnergy(true);
 		return name;
 	}
 
 	public Hero CreateHero(){
 		Hero menu = new Hero(this);
+		this.setEnergy(100);
+		this.setAction(50);
 		return menu;
 	}
 
 	public Villain CreateVillain(){
 		Villain menu = new Villain(this);
+		this.setEnergy(100);
+		this.setAction(50);
 		return menu;
 	}
 
@@ -276,6 +293,50 @@ java.io.Serializable {
 		            "Mike", "Mulhern", "Oliver", "Peter", "Quaxo", "Rita",
 		            "Sandro", "Tim", "Will" }, "Joe");
 		            */
+	}
+	
+	public void runTest2(){
+		/*this.setEnabled(false);
+		try {
+			Thread.sleep(4000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		this.setEnabled(true); */
+		//CustomDialogs.main();
+		
+		
+		
+		//CustomDialog.main();
+		dialogRun("CrimeDialog");
+		
+		System.out.println("Hmm");
+		//a.setVisible(true);
+		try {
+			Thread.sleep(3000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		//a.CrimeGen();
+		
+	}
+	
+	public void dialogRun(String DialogType){
+		try {
+			CustomDialog dialog = new CustomDialog();
+			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+			switch (DialogType) {
+			case "CrimeDialog" : dialog.CrimeDialog(); break;
+			
+
+			}
+			
+			dialog.setVisible(true);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public void startSleep(){
@@ -304,8 +365,9 @@ java.io.Serializable {
 			this.timer.stop();
 			endSleep(20);
 		}else{
-			
-			if ((getRandom(1, 10) > 9) && ((this.getEnergy()) > 20)){
+			int rand = getRandom(1, 11);
+			System.out.println("Checking energy in random sleep " + rand);
+			if ((rand > 9) && ((this.getEnergy()) > 20)){
 				this.timer.stop();
 				GenerateCrime();
 				endSleep((20 - (this.sleepCounter * 5)));
@@ -418,8 +480,26 @@ java.io.Serializable {
 		});
 		btnTest.setBounds(19, 139, 117, 29);
 		panelMenuL.add(btnTest);
+		
+		JButton btnTest_1 = new JButton("Test2");
+		btnTest_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				runTest2();
+			}
+		});
+		btnTest_1.setBounds(19, 180, 117, 29);
+		panelMenuL.add(btnTest_1);
 		contentPane.add(panelGame, "name_1428591074139768000");
 		panelGameL.setLayout(null);
+		
+		JButton btnSave = new JButton("Save");
+		btnSave.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				SaveGame();
+			}
+		});
+		btnSave.setBounds(408, 490, 117, 29);
+		panelGameL.add(btnSave);
 		
 		JLabel lblSleeping_1 = new JLabel("Hello");
 		lblSleeping_1.setFont(new Font("Lucida Grande", Font.PLAIN, 30));
@@ -449,7 +529,7 @@ java.io.Serializable {
 				startSleep();
 			}
 		});
-		btnSleep.setBounds(408, 386, 117, 29);
+		btnSleep.setBounds(408, 381, 117, 29);
 		panelGameL.add(btnSleep);
 		this.btnSleep = btnSleep;
 
@@ -539,4 +619,5 @@ java.io.Serializable {
 			}
 		});
 	}
+
 }

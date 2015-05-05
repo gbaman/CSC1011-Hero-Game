@@ -10,8 +10,7 @@ public class EnergyCountDown implements Runnable {
     }
 	
     public void run() {
-    	m.setEnergy(100);
-    	System.out.println(m.getEnergy());
+    	//System.out.println(m.getEnergy());
     	while (m.getEnergy() > 0 ){
 			try {
 				Thread.sleep(300);

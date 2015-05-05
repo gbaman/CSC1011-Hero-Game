@@ -4,12 +4,46 @@ import java.util.ArrayList;
 import java.util.Random;
 
 
-public abstract class Character {
+public abstract class Character implements
+java.io.Serializable {
 
 	ArrayList<Crime> CrimeList;
 	ArrayList<AvailablePlayers> Players;
-	String Name;
+	String Name = null;
+	public String getName() {
+		return Name;
+	}
+
+	public void setName(String name) {
+		Name = name;
+	}
+
+	int SaveActionBar;
+	int SaveEnergyBar;
 	
+	
+	
+	
+	
+	
+	public int getSaveActionBar() {
+		return SaveActionBar;
+	}
+
+	public void setSaveActionBar(int saveActionBar) {
+		SaveActionBar = saveActionBar;
+	}
+
+	public int getSaveEnergyBar() {
+		return SaveEnergyBar;
+	}
+
+	public void setSaveEnergyBar(int saveEnergyBar) {
+		SaveEnergyBar = saveEnergyBar;
+	}
+	
+	public abstract void ResetM(MainMenu a);
+
 	public abstract void talk();
 	
 	public abstract void setupDisplay();
