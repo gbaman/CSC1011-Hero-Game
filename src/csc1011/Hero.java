@@ -45,6 +45,7 @@ public class Hero extends Character {
 		}else{
 			m.setName(this.Name);
 		}
+		m.setBackgroundCrime(true);
 		System.out.println(m.lblCharImageGame.getIcon());
 		//m.setAction(m.startActionLevel);
 		this.CrimeList = CreateCrimesList();

@@ -15,21 +15,20 @@ public class DialogClose implements Runnable {
 	@Override
 	public void run() {
 		int x = countdown;
-		while (x > 0){
 			try {
-				String message = this.baseMessage +"<br>\n<br>\n  " + x + " seconds remaining. </html>";
-				System.out.println(message);
-				this.d.lblACrimeIs.setText(message);
-				Thread.sleep(1000);
-				x = x - 1;
+				while (x > 0  && !Thread.currentThread().isInterrupted()){
+					String message = this.baseMessage +"<br>\n<br>\n  " + x + " seconds remaining. </html>";
+					this.d.lblACrimeIs.setText(message);
+					Thread.sleep(1000);
+					x = x - 1;
+				}
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				Thread.currentThread().interrupt();
 			}
-			
-		}
-		this.d.dispose();
+		d.dispose();	
+		return;
 		
 	}
+	
 
 }

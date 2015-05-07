@@ -182,7 +182,7 @@ java.io.Serializable {
 	public void RunGame(Character a){
 		this.c = a;
 		this.GameRunning = true;
-		this.setBackgroundCrime(true);
+		this.setBackgroundCrime(false);
 		(new Thread(new EnergyCountDown(this))).start();
 		(new Thread(new GameBackgroundThread(this))).start();
 		c.ResetM(this);
@@ -309,34 +309,28 @@ java.io.Serializable {
 		
 		
 		//CustomDialog.main();
-		dialogRun("CrimeDialog");
-		
-		System.out.println("Hmm");
-		//a.setVisible(true);
-		try {
-			Thread.sleep(3000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		//a.CrimeGen();
+		System.out.println(dialogRun("SelectCharacterDialog"));
 		
 	}
 	
-	public void dialogRun(String DialogType){
+	public String dialogRun(String DialogType){
+		String message = null;
 		try {
 			CustomDialog dialog = new CustomDialog(this);
 			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+			//CustomDialog.creatething(this);
 			switch (DialogType) {
-			case "CrimeDialog" : dialog.CrimeDialog(); break;
-			
-
+			case "CrimeDialog" : message = dialog.CrimeDialog(this); break;
+			case "SelectCharacterDialog" : message = dialog.SelectCharacterDialog(this);
+			case "OpenShopDialog" : message = dialog.DisplayShopList(); break;
 			}
+			System.out.println(message);
 			
-			dialog.setVisible(true);
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return message;
 	}
 	
 	public void startSleep(){
@@ -398,8 +392,9 @@ java.io.Serializable {
 		else{
 			Crime TheCrime = c.getRandomCrime(c.getCrimeList());
 			this.setDeductEnergy(false); 
-			int crimeResponse = JOptionPane.showConfirmDialog(null, "A " + TheCrime.name + " is happening at " + TheCrime.CrimeLocation + ". Would you like to fight it?","A crime is being committed!", JOptionPane.YES_NO_OPTION);
-			if (crimeResponse == 0){
+			//int crimeResponse = JOptionPane.showConfirmDialog(null, "A " + TheCrime.name + " is happening at " + TheCrime.CrimeLocation + ". Would you like to fight it?","A crime is being committed!", JOptionPane.YES_NO_OPTION);
+			String crimeResponse = this.dialogRun("CrimeDialog");
+			if (crimeResponse == "yes"){
 				int EnergyLoss;
 				int ActionGained = 0;
 				if (getRandom() || getRandom()){
@@ -417,6 +412,8 @@ java.io.Serializable {
 					c.adjustAction(-5);
 				}
 
+			}else{
+				c.adjustAction(-5);
 			}
 			this.setDeductEnergy(true); 
 			this.setBackgroundCrime(true);
@@ -467,9 +464,6 @@ java.io.Serializable {
 		lblCharImage.setIcon(imgBat);
 		lblCharImage.setBounds(171, 2, 345, 566);
 		panelMenuL.add(lblCharImage);
-
-		JPanel panelGameL = new JPanel();
-		this.panelGame = panelGameL;
 		this.panelMenu = panelMenuL;
 
 		JButton btnTest = new JButton("Test");
@@ -489,91 +483,6 @@ java.io.Serializable {
 		});
 		btnTest_1.setBounds(19, 180, 117, 29);
 		panelMenuL.add(btnTest_1);
-		contentPane.add(panelGame, "name_1428591074139768000");
-		panelGameL.setLayout(null);
-		
-		JButton btnSave = new JButton("Save");
-		btnSave.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				SaveGame();
-			}
-		});
-		btnSave.setBounds(408, 490, 117, 29);
-		panelGameL.add(btnSave);
-		
-		JLabel lblSleeping_1 = new JLabel("Hello");
-		lblSleeping_1.setFont(new Font("Lucida Grande", Font.PLAIN, 30));
-		lblSleeping_1.setBounds(529, 386, 255, 50);
-		panelGameL.add(lblSleeping_1);
-		this.lblSleeping = lblSleeping_1;
-		this.lblSleeping.setText("");
-
-		JLabel lblCharImageGame = new JLabel("");
-		lblCharImageGame.setBounds(26, 0, 345, 566);
-		panelGameL.add(lblCharImageGame);
-		this.lblCharImageGame = lblCharImageGame;
-
-		JButton btnGenCrime = new JButton("Generate crime");
-		btnGenCrime.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				GenerateCrime();
-			}
-		});
-		btnGenCrime.setBounds(387, 442, 160, 29);
-		panelGameL.add(btnGenCrime);
-		this.btnGenCrime = btnGenCrime;
-
-		JButton btnSleep = new JButton("Sleep");
-		btnSleep.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				startSleep();
-			}
-		});
-		btnSleep.setBounds(408, 381, 117, 29);
-		panelGameL.add(btnSleep);
-		this.btnSleep = btnSleep;
-
-		JProgressBar progressBarStatus = new JProgressBar();
-		progressBarStatus.setStringPainted(true);
-		progressBarStatus.setBounds(561, 46, 146, 20);
-		panelGameL.add(progressBarStatus);
-		this.progressBarStatus = progressBarStatus;
-
-
-		JProgressBar progressBarAction = new JProgressBar();
-		progressBarAction.setStringPainted(true);
-		progressBarAction.setBounds(561, 92, 146, 20);
-		panelGameL.add(progressBarAction);
-		this.progressBarAction = progressBarAction;
-
-		JProgressBar progressBarEnergy = new JProgressBar();
-		progressBarEnergy.setStringPainted(true);
-		progressBarEnergy.setBounds(561, 140, 146, 20);
-		panelGameL.add(progressBarEnergy);
-		this.progressBarEnergy = progressBarEnergy;
-
-		JLabel lblStatus = new JLabel("Status");
-		lblStatus.setBounds(469, 50, 61, 16);
-		panelGameL.add(lblStatus);
-
-		JLabel lblActions = new JLabel("Actions");
-		lblActions.setBounds(469, 96, 61, 16);
-		panelGameL.add(lblActions);
-
-		JLabel lblEnergy = new JLabel("Energy");
-		lblEnergy.setBounds(469, 140, 61, 16);
-		panelGameL.add(lblEnergy);
-		
-		JLabel lblCharName = new JLabel("");
-		lblCharName.setFont(new Font("Lucida Grande", Font.BOLD, 16));
-		lblCharName.setBounds(469, 6, 262, 29);
-		panelGameL.add(lblCharName);
-		this.lblCharName = lblCharName;
-		
-		JLabel BackgroundImg = new JLabel("");
-		BackgroundImg.setIcon(new ImageIcon(MainMenu.class.getResource("/Large/gothback1.jpg")));
-		BackgroundImg.setBounds(6, 0, 784, 568);
-		panelGameL.add(BackgroundImg);
 		
 		JPanel panelFight = new JPanel();
 		contentPane.add(panelFight, "name_1429893385711104000");
@@ -589,6 +498,94 @@ java.io.Serializable {
 		panelFight.add(btnPunch);
 		this.panelFight = panelFight;
 		this.btnPunch = btnPunch;
+																						
+																								JPanel panelGameL = new JPanel();
+																								contentPane.add(panelGameL, "name_226128012451582");
+																								this.panelGame = panelGameL;
+																								panelGameL.setLayout(null);
+																								
+																								JButton btnSave = new JButton("Save");
+																								btnSave.addActionListener(new ActionListener() {
+																									public void actionPerformed(ActionEvent e) {
+																										SaveGame();
+																									}
+																								});
+																								btnSave.setBounds(408, 490, 117, 29);
+																								panelGameL.add(btnSave);
+																								
+																								JLabel lblSleeping_1 = new JLabel("Hello");
+																								lblSleeping_1.setFont(new Font("Lucida Grande", Font.PLAIN, 30));
+																								lblSleeping_1.setBounds(529, 386, 255, 50);
+																								panelGameL.add(lblSleeping_1);
+																								this.lblSleeping = lblSleeping_1;
+																								this.lblSleeping.setText("");
+																								
+																										JLabel lblCharImageGame_1 = new JLabel("");
+																										lblCharImageGame_1.setBounds(26, 0, 345, 566);
+																										panelGameL.add(lblCharImageGame_1);
+																										this.lblCharImageGame = lblCharImageGame_1;
+																										
+																												JButton btnGenCrime_1 = new JButton("Generate crime");
+																												btnGenCrime_1.addActionListener(new ActionListener() {
+																													public void actionPerformed(ActionEvent e) {
+																														GenerateCrime();
+																													}
+																												});
+																												btnGenCrime_1.setBounds(387, 442, 160, 29);
+																												panelGameL.add(btnGenCrime_1);
+																												this.btnGenCrime = btnGenCrime_1;
+																												
+																														JButton btnSleep_1 = new JButton("Sleep");
+																														btnSleep_1.addActionListener(new ActionListener() {
+																															public void actionPerformed(ActionEvent e) {
+																																startSleep();
+																															}
+																														});
+																														btnSleep_1.setBounds(408, 381, 117, 29);
+																														panelGameL.add(btnSleep_1);
+																														this.btnSleep = btnSleep_1;
+																														
+																																JProgressBar progressBarStatus_1 = new JProgressBar();
+																																progressBarStatus_1.setStringPainted(true);
+																																progressBarStatus_1.setBounds(561, 46, 146, 20);
+																																panelGameL.add(progressBarStatus_1);
+																																this.progressBarStatus = progressBarStatus_1;
+																																
+																																
+																																		JProgressBar progressBarAction_1 = new JProgressBar();
+																																		progressBarAction_1.setStringPainted(true);
+																																		progressBarAction_1.setBounds(561, 92, 146, 20);
+																																		panelGameL.add(progressBarAction_1);
+																																		this.progressBarAction = progressBarAction_1;
+																																		
+																																				JProgressBar progressBarEnergy_1 = new JProgressBar();
+																																				progressBarEnergy_1.setStringPainted(true);
+																																				progressBarEnergy_1.setBounds(561, 140, 146, 20);
+																																				panelGameL.add(progressBarEnergy_1);
+																																				this.progressBarEnergy = progressBarEnergy_1;
+																																				
+																																						JLabel lblStatus = new JLabel("Status");
+																																						lblStatus.setBounds(469, 50, 61, 16);
+																																						panelGameL.add(lblStatus);
+																																						
+																																								JLabel lblActions = new JLabel("Actions");
+																																								lblActions.setBounds(469, 96, 61, 16);
+																																								panelGameL.add(lblActions);
+																																								
+																																										JLabel lblEnergy = new JLabel("Energy");
+																																										lblEnergy.setBounds(469, 140, 61, 16);
+																																										panelGameL.add(lblEnergy);
+																																										
+																																										JLabel lblCharName_1 = new JLabel("");
+																																										lblCharName_1.setFont(new Font("Lucida Grande", Font.BOLD, 16));
+																																										lblCharName_1.setBounds(469, 6, 262, 29);
+																																										panelGameL.add(lblCharName_1);
+																																										this.lblCharName = lblCharName_1;
+																																										
+																																										JLabel BackgroundImg = new JLabel("");
+																																										BackgroundImg.setIcon(new ImageIcon(MainMenu.class.getResource("/Large/gothback1.jpg")));
+																																										BackgroundImg.setBounds(6, 0, 784, 568);
+																																										panelGameL.add(BackgroundImg);
 		btnHero.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				panelMenu.setVisible(false);
