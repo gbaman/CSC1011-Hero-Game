@@ -16,4 +16,10 @@ public class Clothing extends Items {
 		return this.fightSuccess;
 	}
 
+	@Override
+	public void PurchaseAction() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

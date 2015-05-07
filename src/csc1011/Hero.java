@@ -14,6 +14,8 @@ public class Hero extends Character {
 	public Hero(MainMenu m){
 		m.panelGame.setVisible(true);
 		this.m = m;
+		this.InventoryArmor = new ArrayList<Items>();
+		this.InventoryGadget = new ArrayList<Items>();
 	}
 	
 	public void ResetM(MainMenu a){

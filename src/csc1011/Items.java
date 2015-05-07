@@ -21,6 +21,8 @@ public abstract class Items {
     }
     
     abstract public int getModifier();
+    
+    abstract public void PurchaseAction();
 
     public String getModifierText(){
     	return this.ModifierText;

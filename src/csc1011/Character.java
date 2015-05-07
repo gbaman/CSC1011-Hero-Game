@@ -9,6 +9,41 @@ java.io.Serializable {
 
 	ArrayList<Crime> CrimeList;
 	ArrayList<AvailablePlayers> Players;
+	ArrayList<Items> InventoryArmor;
+	int money = 0;
+	public int getMoney() {
+		return this.money;
+	}
+
+	public void setMoney(int money) {
+		this.money = money;
+	}
+
+	public ArrayList<AvailablePlayers> getPlayers() {
+		return Players;
+	}
+
+	public void setPlayers(ArrayList<AvailablePlayers> players) {
+		Players = players;
+	}
+
+	public ArrayList<Items> getInventoryArmor() {
+		return InventoryArmor;
+	}
+
+	public void setInventoryArmor(ArrayList<Items> inventoryArmor) {
+		InventoryArmor = inventoryArmor;
+	}
+
+	public ArrayList<Items> getInventoryGadget() {
+		return InventoryGadget;
+	}
+
+	public void setInventoryGadget(ArrayList<Items> inventoryGadget) {
+		InventoryGadget = inventoryGadget;
+	}
+
+	ArrayList<Items> InventoryGadget;
 	String Name = null;
 	public String getName() {
 		return Name;
@@ -21,7 +56,7 @@ java.io.Serializable {
 	int SaveActionBar;
 	int SaveEnergyBar;
 	
-	
+
 	
 	
 	

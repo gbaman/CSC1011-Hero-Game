@@ -4,6 +4,7 @@ import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
@@ -21,6 +22,7 @@ import java.awt.BorderLayout;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridLayout;
+import java.util.ArrayList;
 
 
 public class CustomDialog extends JDialog {
@@ -39,8 +41,20 @@ public class CustomDialog extends JDialog {
 	JPanel PanelShopArmor;
 	private JList<Items> ArmorList;
 	private JList<Items> GadgetList;
+	private DefaultListModel<Items> FoodListModel;
+	private DefaultListModel<Items> ArmorListModel;
+	private DefaultListModel<Items> GadgetListModel;
+	private JLabel labelMoney;
 
-	
+
+	public String getLabelMoney() {
+		return labelMoney.getText();
+	}
+
+	public void setLabelMoney(int labelMoney) {
+		this.labelMoney.setText("£" + labelMoney);
+	}
+
 	public String getMessage() {
 		return message;
 	}
@@ -62,52 +76,84 @@ public class CustomDialog extends JDialog {
 		this.setVisible(true);
 		return this.message;
 	}
-	
-	public void DisposeDialog(){
-		this.DialogCloser.interrupt();
+
+	public void DisposeDialog(Boolean interupt){
+		if (interupt){
+			this.DialogCloser.interrupt();
+		}
 		dispose();
 		System.out.println("Disposed!");
 	}
-	
+
 	public String SelectCharacterDialog(MainMenu m){
-		
+
 		return "";
 	}
-	
+
 	private JList setupJList(JList l){
 		l.setCellRenderer(new ShopItemRenderer());
 		l.setVisibleRowCount(1);
-		
+
 		return CharacterList;
-		
+
 	}
-	
+
 	private DefaultListModel<Items> checkItemsNotBought(DefaultListModel<Items> a){
 		
+		for (int count = 0; count < this.m.c.InventoryArmor.size(); count++) {
+			System.out.println("I own " + this.m.c.InventoryArmor.get(count).getName());
+		}
 		
+		ArrayList<Integer> toRemove = new ArrayList<Integer>();
+		for (int count = 0; count < a.size(); count++) {
+			Items toCheck = a.getElementAt(count);
+			//System.out.println("Are these the same? " + toCheck.getName() + " " + this.m.c.InventoryArmor.) ;
+			Boolean DoesContain = this.m.c.InventoryArmor.contains(toCheck);
+			System.out.println(DoesContain + " " + toCheck.getName());
+			
+			for (int count2 = 0; count2 < this.m.c.InventoryArmor.size(); count2++) {
+				if (this.m.c.InventoryArmor.get(count2).getName() == toCheck.getName() ){
+					System.out.println("I am going to remove " + this.m.c.InventoryArmor.get(count).getName());
+					toRemove.add(count);
+				}	
+			}
+			
+		}
+		if (toRemove.size() > 0){
+			for (int count = toRemove.size(); count > 0; count--) {
+				a.remove(toRemove.get(count-1));
+				//System.out.println("Removing " + a.getElementAt(toRemove.get(count)));
+			
+			}
+		}
+		System.out.println("a is long " + a.getSize());
 		return a;
-		
+
 	}
-	
+
 	public String DisplayShopList(MainMenu m){
+		this.m = m;
 		DefaultListModel<Items> FoodListModel = new DefaultListModel<>();
 		// (Name, filename, price, modifier)
 		//.addElement(new Food("", "", 20, 10));
 		FoodListModel.addElement(new Food("Apple", "Apple", 20, 10));
 		FoodListModel.addElement(new Food("Toast", "Toast-Bread", 50, 20));
-		
+
 		DefaultListModel<Items> ArmorListModel = new DefaultListModel<>();
 		ArmorListModel.addElement(new Clothing("Suit", "Suit", 20, 10));
 		
 		DefaultListModel<Items> GadgetListModel = new DefaultListModel<>();
 		
-		
+		ArmorListModel = checkItemsNotBought(ArmorListModel);
 		JList<Items> FoodList = new JList<>(FoodListModel);
 		JList<Items> ArmorList = new JList<>(checkItemsNotBought(ArmorListModel));
 		JList<Items> GadgetList = new JList<>(checkItemsNotBought(GadgetListModel));
 		FoodList.setCellRenderer(new ShopItemRenderer());
 		ArmorList.setCellRenderer(new ShopItemRenderer());
 		GadgetList.setCellRenderer(new ShopItemRenderer());
+		this.FoodListModel = FoodListModel;
+		this.ArmorListModel = ArmorListModel;
+		this.GadgetListModel = GadgetListModel;
 		this.FoodList = FoodList;
 		this.ArmorList = ArmorList;
 		this.GadgetList = GadgetList;
@@ -122,10 +168,10 @@ public class CustomDialog extends JDialog {
 		FoodScrollPane.setBounds(0, 0, this.PanelShop.getWidth(), this.PanelShop.getHeight());
 		ArmorScrollPane.setBounds(0, 0, this.PanelShopArmor.getWidth(), this.PanelShopArmor.getHeight());
 		GadgetScrollPane.setBounds(0, 0, this.PanelShop.getWidth(), this.PanelShop.getHeight());
-		
-		
-		
-		
+
+
+
+
 		this.PanelShop.add(FoodScrollPane);
 		this.PanelShopArmor.add(ArmorScrollPane);
 		this.PanelShopGadget.add(GadgetScrollPane);
@@ -137,11 +183,66 @@ public class CustomDialog extends JDialog {
 		this.setVisible(true);
 		return "Hi";
 	}
-	
-	private void BuyItem(){
-		System.out.println(this.FoodList.getSelectedValue());
+
+	private Boolean CanAfford(Items a){
+		int cost = a.getPrice();
+		int money = this.m.c.getMoney();
+		if ((money - cost) > 0){
+			m.c.setMoney(money - cost);
+			return true;
+		}else{
+			int missing = (money - cost) * -1;
+			JOptionPane.showMessageDialog(null, "You don't have enough money to purchase that item. You are short by £" + missing, "Not enough money", JOptionPane.ERROR_MESSAGE);
+			return false;
+		}
+
 	}
-	
+
+	private void BuyItem(String type){
+		System.out.println("hi");
+		//System.out.println(FoodList.getSelectedIndex());
+		//System.out.println(toBuy.getPrice());
+		//System.out.println(toBuy.getPrice());
+		switch (type) {
+		case "Armor" :{
+			Items toBuy = ArmorList.getSelectedValue();
+			if (this.CanAfford(toBuy)){
+				ArrayList<Items> I =m.c.getInventoryArmor() ;
+				I.add(toBuy);
+
+				m.c.setInventoryArmor(I);
+				JOptionPane.showMessageDialog(null, toBuy.getName() + " has been purchased for £" + toBuy.getPrice() + ". £" + this.m.c.getMoney() + " remaining." , "Purchased", JOptionPane.INFORMATION_MESSAGE);
+			}
+			break;
+		}
+		case "Food" :{
+			Items toBuy = FoodList.getSelectedValue();
+			if (this.CanAfford(toBuy)){
+				this.m.setEnergy(this.m.getEnergy() + toBuy.getModifier());
+				JOptionPane.showMessageDialog(null, toBuy.getName() + "has been purchased for £" + toBuy.getPrice() + ". £" + this.m.c.getMoney() + " remaining." , "Purchased", JOptionPane.INFORMATION_MESSAGE);
+
+			}
+			break;
+		}
+		case "Gadget" :{
+			Items toBuy = GadgetList.getSelectedValue();
+			if (this.CanAfford(toBuy)){
+				ArrayList<Items> I =m.c.getInventoryGadget() ;
+				I.add(toBuy);
+
+				m.c.setInventoryGadget(I);
+				JOptionPane.showMessageDialog(null, toBuy.getName() + "has been purchased for £" + toBuy.getPrice() + ". £" + this.m.c.getMoney() + " remaining." , "Purchased", JOptionPane.INFORMATION_MESSAGE);
+			}
+			break;
+		}
+
+
+		}
+		this.setLabelMoney(this.m.c.getMoney());
+		System.out.println(this.FoodList.getSelectedValuesList());
+		this.DisplayShopList(m);
+	}
+
 	/**
 	 * Create the dialog.
 	 */
@@ -166,9 +267,9 @@ public class CustomDialog extends JDialog {
 					JButton btnNo = new JButton("No");
 					btnNo.addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent e) {
-							
+
 							setMessage("no");
-							DisposeDialog();
+							DisposeDialog(true);
 						}
 					});
 					btnNo.setBounds(25, 219, 117, 29);
@@ -180,12 +281,12 @@ public class CustomDialog extends JDialog {
 			btnYes.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					setMessage("yes");
-					DisposeDialog();
-					
+					DisposeDialog(true);
+
 				}
 			});
 			PanelCrimeGen.add(btnYes);
-			
+
 			JLabel lblCrimeIcon = new JLabel("");
 			lblCrimeIcon.setBounds(91, 28, 232, 79);
 			PanelCrimeGen.add(lblCrimeIcon);
@@ -198,31 +299,60 @@ public class CustomDialog extends JDialog {
 			this.PanelShopOverallA = panelShopOver;
 			panelShopOver.setLayout(null);
 			JPanel PanelShopFood = new JPanel();
-			PanelShopFood.setBounds(765, 22, 237, 402);
+			PanelShopFood.setBounds(703, 48, 237, 402);
 			panelShopOver.add(PanelShopFood);
 			this.PanelShop = PanelShopFood;
 			PanelShopFood.setLayout(null);
-			
-			JButton btnBuyItem = new JButton("Buy Item");
-			btnBuyItem.addActionListener(new ActionListener() {
+
+			JButton btnBuyFood = new JButton("Buy selected food");
+			btnBuyFood.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					BuyItem();
+					BuyItem("Food");
 				}
 			});
-			btnBuyItem.setBounds(73, 274, 100, 27);
-			panelShopOver.add(btnBuyItem);
-			
+			btnBuyFood.setBounds(745, 462, 150, 27);
+			panelShopOver.add(btnBuyFood);
+
 			JPanel PanelShopGadget = new JPanel();
-			PanelShopGadget.setBounds(470, 241, 237, 400);
+			PanelShopGadget.setBounds(426, 48, 237, 400);
 			panelShopOver.add(PanelShopGadget);
 			this.PanelShopGadget = PanelShopGadget;
 			PanelShopGadget.setLayout(null);
-			
+
 			JPanel PanelShopArmor = new JPanel();
-			PanelShopArmor.setBounds(251, 49, 207, 400);
+			PanelShopArmor.setBounds(172, 48, 207, 400);
 			panelShopOver.add(PanelShopArmor);
 			this.PanelShopArmor = PanelShopArmor;
 			PanelShopArmor.setLayout(null);
+
+			JButton btnBuyArmor = new JButton("Buy selected armor");
+			btnBuyArmor.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					System.out.println("hi");
+					BuyItem("Armor");
+				}
+			});
+			btnBuyArmor.setBounds(200, 462, 150, 27);
+			panelShopOver.add(btnBuyArmor);
+
+			JButton btnBuyGadget = new JButton("Buy selected gadget");
+			btnBuyGadget.setBounds(465, 462, 150, 27);
+			panelShopOver.add(btnBuyGadget);
+
+			JLabel labelMoney = new JLabel("");
+			labelMoney.setBounds(39, 540, 57, 15);
+			panelShopOver.add(labelMoney);
+			this.labelMoney = labelMoney;
+			
+			JButton btnBackToGame = new JButton("Back to game");
+			btnBackToGame.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					DisposeDialog(false);
+				}
+			});
+			btnBackToGame.setBounds(6, 6, 111, 27);
+			panelShopOver.add(btnBackToGame);
+			this.setLabelMoney(this.m.c.getMoney());
 
 		}
 	}

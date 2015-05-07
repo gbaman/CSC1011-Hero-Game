@@ -15,4 +15,10 @@ public class Food extends Items {
 		return energyRestore;
 	}
 
+	@Override
+	public void PurchaseAction() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

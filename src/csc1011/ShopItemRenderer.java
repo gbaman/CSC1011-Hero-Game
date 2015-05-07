@@ -21,7 +21,6 @@ public class ShopItemRenderer extends JLabel implements ListCellRenderer<Items> 
 		String location = "/shop/" + code + ".png";
 		//String location = "/" + code + ".png";
 		//String location = "/The_Batman.jpg";
-		System.out.println(location);
         ImageIcon imageIcon = new ImageIcon(getClass().getResource(location));
         //= new ImageIcon(getClass().getResource("/resources/" + "Crime-Pix" + ".jpg"));
 

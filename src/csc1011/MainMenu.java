@@ -88,6 +88,13 @@ java.io.Serializable {
 	Timer timer;
 	private int sleepCounter;
 	
+	public Boolean getGameRunning() {
+		return GameRunning;
+	}
+	public void setGameRunning(Boolean gameRunning) {
+		GameRunning = gameRunning;
+	}
+	
 	public int getRandom(int min, int max){
 		Random random = new Random();
 		return random.nextInt(max - min) + min;
@@ -316,6 +323,9 @@ java.io.Serializable {
 	public String dialogRun(String DialogType){
 		String message = null;
 		try {
+			this.setDeductEnergy(false);
+			this.setGameRunning(false);
+			
 			CustomDialog dialog = new CustomDialog(this);
 			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 			//CustomDialog.creatething(this);
@@ -330,6 +340,8 @@ java.io.Serializable {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		this.setDeductEnergy(true);
+		this.setGameRunning(true);
 		return message;
 	}
 	
@@ -397,12 +409,15 @@ java.io.Serializable {
 			if (crimeResponse == "yes"){
 				int EnergyLoss;
 				int ActionGained = 0;
+				int MoneyGained = 0;
 				if (getRandom() || getRandom()){
 					ActionGained = 10;
+					MoneyGained = 50;
 					EnergyLoss = getRandom(5, 15);
 					setEnergy(getEnergy() - EnergyLoss);
 					c.adjustAction(ActionGained);
 					JOptionPane.showMessageDialog(null, "Crime successfully stopped! You lost " + EnergyLoss + " energy!", "Crime stopped!", JOptionPane.INFORMATION_MESSAGE);
+					this.c.setMoney(this.c.getMoney() + MoneyGained);
 
 				}else
 				{	
@@ -544,6 +559,15 @@ java.io.Serializable {
 																														btnSleep_1.setBounds(408, 381, 117, 29);
 																														panelGameL.add(btnSleep_1);
 																														this.btnSleep = btnSleep_1;
+																																
+																																JButton btnOpenshop = new JButton("Open Shop");
+																																btnOpenshop.addActionListener(new ActionListener() {
+																																	public void actionPerformed(ActionEvent e) {
+																																		System.out.println(dialogRun("SelectCharacterDialog"));
+																																	}
+																																});
+																																btnOpenshop.setBounds(418, 531, 94, 27);
+																																panelGameL.add(btnOpenshop);
 																														
 																																JProgressBar progressBarStatus_1 = new JProgressBar();
 																																progressBarStatus_1.setStringPainted(true);

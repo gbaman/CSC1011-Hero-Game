@@ -13,4 +13,10 @@ public class Gadget extends Items {
 		return 0;
 	}
 
+	@Override
+	public void PurchaseAction() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
