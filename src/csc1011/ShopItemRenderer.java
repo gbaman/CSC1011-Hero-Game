@@ -18,11 +18,16 @@ public class ShopItemRenderer extends JLabel implements ListCellRenderer<Items> 
 	public Component getListCellRendererComponent(JList<? extends Items> list,
 			Items value, int index, boolean isSelected, boolean cellHasFocus) {
 		String code = value.getCode();
-        ImageIcon imageIcon = new ImageIcon(getClass().getResource("/Crime-Pix.jpg"));
+		String location = "/shop/" + code + ".png";
+		//String location = "/" + code + ".png";
+		//String location = "/The_Batman.jpg";
+		System.out.println(location);
+        ImageIcon imageIcon = new ImageIcon(getClass().getResource(location));
         //= new ImageIcon(getClass().getResource("/resources/" + "Crime-Pix" + ".jpg"));
 
         setIcon(imageIcon);
-        setText(value.getName());
+        String Message = "<html>\n" + value.getName() + "<br>\n" + value.getModifierText() + " " + value.getModifier() + "<br>\nPrice - £" + value.getPrice();
+        setText(Message);
 
         if (isSelected) {
             setBackground(list.getSelectionBackground());

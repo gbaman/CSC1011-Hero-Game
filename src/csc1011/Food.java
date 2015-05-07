@@ -1,10 +1,18 @@
 package csc1011;
 
 public class Food extends Items {
-
-	public Food(String name, String code) {
+	int energyRestore;
+	
+	public Food(String name, String code, int price, int energyRestore) {
 		super(name, code);
-		// TODO Auto-generated constructor stub
+		this.energyRestore = energyRestore;
+		this.setPrice(price); 
+		this.setModifierText("Increases energy by ");
+	}
+
+	@Override
+	public int getModifier() {
+		return energyRestore;
 	}
 
 }

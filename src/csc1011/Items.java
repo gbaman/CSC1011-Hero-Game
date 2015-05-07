@@ -1,15 +1,34 @@
 package csc1011;
 
-public class Items {
+public abstract class Items {
 	
     private String name;
     private String code;
+    private String ModifierText;
+    private int price;
 
-    public Items(String name, String code) {
+    public int getPrice() {
+		return price;
+	}
+
+	public void setPrice(int price) {
+		this.price = price;
+	}
+
+	public Items(String name, String code) {
         this.name = name;
         this.code = code;
     }
+    
+    abstract public int getModifier();
 
+    public String getModifierText(){
+    	return this.ModifierText;
+    }
+    public void setModifierText(String value){
+    	this.ModifierText = value;
+    }
+    
     public String getName() {
         return name;
     }

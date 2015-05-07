@@ -322,7 +322,7 @@ java.io.Serializable {
 			switch (DialogType) {
 			case "CrimeDialog" : message = dialog.CrimeDialog(this); break;
 			case "SelectCharacterDialog" : message = dialog.SelectCharacterDialog(this);
-			case "OpenShopDialog" : message = dialog.DisplayShopList(); break;
+			case "OpenShopDialog" : message = dialog.DisplayShopList(this); break;
 			}
 			System.out.println(message);
 			

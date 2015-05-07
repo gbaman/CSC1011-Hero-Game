@@ -34,7 +34,11 @@ public class CustomDialog extends JDialog {
 	JList CharacterList;
 	JPanel PanelShop;
 	JPanel PanelShopOverallA;
-	JList FoodList;
+	private JList<Items> FoodList;
+	JPanel PanelShopGadget;
+	JPanel PanelShopArmor;
+	private JList<Items> ArmorList;
+	private JList<Items> GadgetList;
 
 	
 	public String getMessage() {
@@ -70,25 +74,65 @@ public class CustomDialog extends JDialog {
 		return "";
 	}
 	
-	public String DisplayShopList(){
-		Items bob = new Items("bob", "CrimePix");
-		Items brian = new Items("bob", "CrimePix");
-		DefaultListModel<Items> listModel = new DefaultListModel<>();
-		listModel.addElement(bob);
-		listModel.addElement(brian);
-		JList<Items> FoodList = new JList<>(listModel);
-		//getContentPane().add(new JScrollPane(countryList));
+	private JList setupJList(JList l){
+		l.setCellRenderer(new ShopItemRenderer());
+		l.setVisibleRowCount(1);
+		
+		return CharacterList;
+		
+	}
+	
+	private DefaultListModel<Items> checkItemsNotBought(DefaultListModel<Items> a){
+		
+		
+		return a;
+		
+	}
+	
+	public String DisplayShopList(MainMenu m){
+		DefaultListModel<Items> FoodListModel = new DefaultListModel<>();
+		// (Name, filename, price, modifier)
+		//.addElement(new Food("", "", 20, 10));
+		FoodListModel.addElement(new Food("Apple", "Apple", 20, 10));
+		FoodListModel.addElement(new Food("Toast", "Toast-Bread", 50, 20));
+		
+		DefaultListModel<Items> ArmorListModel = new DefaultListModel<>();
+		ArmorListModel.addElement(new Clothing("Suit", "Suit", 20, 10));
+		
+		DefaultListModel<Items> GadgetListModel = new DefaultListModel<>();
+		
+		
+		JList<Items> FoodList = new JList<>(FoodListModel);
+		JList<Items> ArmorList = new JList<>(checkItemsNotBought(ArmorListModel));
+		JList<Items> GadgetList = new JList<>(checkItemsNotBought(GadgetListModel));
 		FoodList.setCellRenderer(new ShopItemRenderer());
-		//countryList.setBounds(204, 208, 130, -117);
-		FoodList.setVisibleRowCount(1);
-		JScrollPane scrollPane = new JScrollPane();
+		ArmorList.setCellRenderer(new ShopItemRenderer());
+		GadgetList.setCellRenderer(new ShopItemRenderer());
 		this.FoodList = FoodList;
-		scrollPane.setViewportView(FoodList);
-		scrollPane.setMinimumSize(new Dimension(100, 50));
-		scrollPane.setBounds(0, 0, this.PanelShop.getWidth(), this.PanelShop.getHeight());
-		this.PanelShop.add(scrollPane);
+		this.ArmorList = ArmorList;
+		this.GadgetList = GadgetList;
+		//FoodList.setVisibleRowCount(1);
+		JScrollPane FoodScrollPane = new JScrollPane();
+		JScrollPane ArmorScrollPane = new JScrollPane();
+		JScrollPane GadgetScrollPane = new JScrollPane();
+		FoodScrollPane.setViewportView(FoodList);
+		ArmorScrollPane.setViewportView(ArmorList);
+		GadgetScrollPane.setViewportView(GadgetList);
+		//FoodScrollPane.setMinimumSize(new Dimension(100, 50));
+		FoodScrollPane.setBounds(0, 0, this.PanelShop.getWidth(), this.PanelShop.getHeight());
+		ArmorScrollPane.setBounds(0, 0, this.PanelShopArmor.getWidth(), this.PanelShopArmor.getHeight());
+		GadgetScrollPane.setBounds(0, 0, this.PanelShop.getWidth(), this.PanelShop.getHeight());
+		
+		
+		
+		
+		this.PanelShop.add(FoodScrollPane);
+		this.PanelShopArmor.add(ArmorScrollPane);
+		this.PanelShopGadget.add(GadgetScrollPane);
 		this.PanelCrimeGen.setVisible(false);
 		this.PanelShop.setVisible(true);
+		this.PanelShopArmor.setVisible(true);
+		this.PanelShopGadget.setVisible(true);
 		this.PanelShopOverallA.setVisible(true);
 		this.setVisible(true);
 		return "Hi";
@@ -104,7 +148,7 @@ public class CustomDialog extends JDialog {
 	public CustomDialog(MainMenu m) {
 		this.m = m;
 		this.setModal(true);
-		setBounds(100, 100, 795, 493);
+		setBounds(100, 100, 1100, 641);
 		this.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
 		getContentPane().setLayout(new CardLayout(0, 0));
 		{
@@ -153,11 +197,11 @@ public class CustomDialog extends JDialog {
 			getContentPane().add(panelShopOver, "name_246962339803042");
 			this.PanelShopOverallA = panelShopOver;
 			panelShopOver.setLayout(null);
-			JPanel PanelShop = new JPanel();
-			PanelShop.setBounds(371, 23, 237, 402);
-			panelShopOver.add(PanelShop);
-			this.PanelShop = PanelShop;
-			PanelShop.setLayout(null);
+			JPanel PanelShopFood = new JPanel();
+			PanelShopFood.setBounds(765, 22, 237, 402);
+			panelShopOver.add(PanelShopFood);
+			this.PanelShop = PanelShopFood;
+			PanelShopFood.setLayout(null);
 			
 			JButton btnBuyItem = new JButton("Buy Item");
 			btnBuyItem.addActionListener(new ActionListener() {
@@ -165,8 +209,20 @@ public class CustomDialog extends JDialog {
 					BuyItem();
 				}
 			});
-			btnBuyItem.setBounds(73, 274, 94, 27);
+			btnBuyItem.setBounds(73, 274, 100, 27);
 			panelShopOver.add(btnBuyItem);
+			
+			JPanel PanelShopGadget = new JPanel();
+			PanelShopGadget.setBounds(470, 241, 237, 400);
+			panelShopOver.add(PanelShopGadget);
+			this.PanelShopGadget = PanelShopGadget;
+			PanelShopGadget.setLayout(null);
+			
+			JPanel PanelShopArmor = new JPanel();
+			PanelShopArmor.setBounds(251, 49, 207, 400);
+			panelShopOver.add(PanelShopArmor);
+			this.PanelShopArmor = PanelShopArmor;
+			PanelShopArmor.setLayout(null);
 
 		}
 	}

@@ -7,4 +7,10 @@ public class Gadget extends Items {
 		// TODO Auto-generated constructor stub
 	}
 
+	@Override
+	public int getModifier() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 }
