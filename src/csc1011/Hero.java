@@ -16,6 +16,9 @@ public class Hero extends Character {
 		this.m = m;
 		this.InventoryArmor = new ArrayList<Items>();
 		this.InventoryGadget = new ArrayList<Items>();
+		this.CLocation = new Location(156,143, "City Centre");
+		//m.progressBarStatus.setBackground(bg);
+		
 	}
 	
 	public void ResetM(MainMenu a){

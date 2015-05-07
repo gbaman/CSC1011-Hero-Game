@@ -17,6 +17,7 @@ java.io.Serializable {
 	String CommitedBy;
 	CrimeSeverityLevel CrimeSeverity;
 	CrimeLocationsAvailable CrimeLocation;
+	int CrimeExpire = 20;
 	
 	
 	public enum CrimeSeverityLevel {

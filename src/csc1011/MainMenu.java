@@ -3,6 +3,7 @@ package csc1011;
 import java.awt.Color;
 import java.awt.EventQueue;
 
+import javax.swing.DefaultListModel;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -22,6 +23,7 @@ import javax.swing.ImageIcon;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.Random;
 
 import javax.swing.JProgressBar;
@@ -87,6 +89,7 @@ java.io.Serializable {
 	JLabel lblSleeping;
 	Timer timer;
 	private int sleepCounter;
+	private ArrayList<MapButton> MapButtons;
 	
 	public Boolean getGameRunning() {
 		return GameRunning;
@@ -451,6 +454,78 @@ java.io.Serializable {
 		System.out.println(x);
 		System.out.println(y);
 	}
+	
+	public void UpdateMap(){
+		for (int count = 0; count < MapButtons.size(); count++) {
+			MapButton current = MapButtons.get(count);
+			if (current.getCLocation() == this.c.getCLocation()){
+				current.setText("X");
+			}else{
+				if (current.getCrime() == null){
+					current.setText("");
+				}else{
+					current.setText("!");
+				}
+			}
+		}
+	}
+	
+	public void MoveCharacter(MapButton b){
+		int pxLoc = this.c.CLocation.getxLoc();
+		int pyLoc = this.c.CLocation.getxLoc();
+		int nxLoc = b.getxLoc();
+		int nyLoc = b.getyLoc();
+		int distance = (int)(Math.sqrt((pxLoc-nxLoc)*(pxLoc-nxLoc) + (pyLoc-nyLoc)*(pyLoc-nyLoc)));
+		System.out.println("Distance is "+distance/10);
+		this.setGameRunning(false);
+		this.setDeductEnergy(false);
+		int yesNo = JOptionPane.showConfirmDialog(null, "Are you sure you would like to move zone to " + b.getName()+ "? It will take " + distance/10 + " energy." , "Move zone", JOptionPane.YES_NO_OPTION);
+		if (yesNo == JOptionPane.YES_OPTION){
+			if (this.getEnergy() < distance/10){
+				JOptionPane.showMessageDialog(null, "Unable to move zone, you need  " + (this.getEnergy() - distance/10) + " more energy.", "Failed!", JOptionPane.ERROR_MESSAGE);
+			} else{
+				this.setEnergy(this.getEnergy() - distance/10);
+				this.c.setLocation(b.getCLocation());
+			}
+		}
+		UpdateMap();
+		this.setGameRunning(true);
+		this.setDeductEnergy(true);
+	}
+	
+	private void CreateMapButtons(){
+		int xOff = 21;
+		int yOff = 300;
+		ArrayList<MapButton> MapButtons = new ArrayList<MapButton>();
+		MapButtons.add(new MapButton("","Docks", 245,22 ));
+		MapButtons.add(new MapButton("","Odyssey", 184,130 ));
+		MapButtons.add(new MapButton("","City Centre", 156,143 ));
+		MapButtons.add(new MapButton("","Airport", 301,61 ));
+		MapButtons.add(new MapButton("","University", 136,213 ));
+		this.MapButtons = MapButtons;
+		
+		for (int count = 0; count < MapButtons.size(); count++) {
+			MapButtons.get(count).setBackground(Color.GREEN);
+			MapButtons.get(count).setBounds(MapButtons.get(count).getxLoc() + xOff, MapButtons.get(count).getyLoc() + yOff, 20, 20 );
+			this.panelGame.add(MapButtons.get(count));
+			
+			MapButtons.get(count).addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					System.out.println("Hello world");
+					MapButton button = (MapButton)e.getSource();
+					MoveCharacter(button);
+					
+					
+				}
+			});
+			
+			
+			
+		}
+		
+		//btnCrimeDocks.setBackground(Color.GREEN);
+		//btnCrimeDocks.setBounds(251, 22, 20, 20);
+	}
 	/**
 	 * Create the frame.
 	 */
@@ -528,15 +603,46 @@ java.io.Serializable {
 																								btnSave.setBounds(408, 490, 117, 29);
 																								panelGameL.add(btnSave);
 																								
+																								JButton btnCrimeDocks = new JButton("X");
+																								btnCrimeDocks.setContentAreaFilled(false);
+																								btnCrimeDocks.setBackground(Color.GREEN);
+																								btnCrimeDocks.setOpaque(true);
+																								btnCrimeDocks.setBounds(251, 22, 20, 20);
+																								panelGameL.add(btnCrimeDocks);
+																								/*
+																								JButton btnCrimeAirport = new JButton("");
+																								btnCrimeAirport.setBackground(Color.GREEN);
+																								btnCrimeAirport.setBounds(307, 61, 20, 20);
+																								panelGameL.add(btnCrimeAirport);
+																								
+																								JButton btnCrimeCentre = new JButton("");
+																								btnCrimeCentre.setBackground(Color.GREEN);
+																								btnCrimeCentre.setBounds(162, 143, 20, 20);
+																								panelGameL.add(btnCrimeCentre);
+																								
+																								JButton btnCrimeQueens = new JButton("");
+																								btnCrimeQueens.setBackground(Color.GREEN);
+																								btnCrimeQueens.setBounds(142, 213, 20, 20);
+																								panelGameL.add(btnCrimeQueens);
+																								
+																								JButton btnCrimeOdyssey = new JButton("");
+																								btnCrimeOdyssey.setBackground(Color.GREEN);
+																								btnCrimeOdyssey.setBounds(194, 130, 20, 20);
+																								panelGameL.add(btnCrimeOdyssey);
+																								*/
+																								
+																								CreateMapButtons();
+																								
+																								
 																								JLabel lblSleeping_1 = new JLabel("Hello");
 																								lblSleeping_1.setFont(new Font("Lucida Grande", Font.PLAIN, 30));
-																								lblSleeping_1.setBounds(529, 386, 255, 50);
+																								lblSleeping_1.setBounds(482, 249, 255, 50);
 																								panelGameL.add(lblSleeping_1);
 																								this.lblSleeping = lblSleeping_1;
 																								this.lblSleeping.setText("");
 																								
 																										JLabel lblCharImageGame_1 = new JLabel("");
-																										lblCharImageGame_1.setBounds(26, 0, 345, 566);
+																										lblCharImageGame_1.setBounds(26, 0, 345, 261);
 																										panelGameL.add(lblCharImageGame_1);
 																										this.lblCharImageGame = lblCharImageGame_1;
 																										
@@ -587,6 +693,11 @@ java.io.Serializable {
 																																				progressBarEnergy_1.setBounds(561, 140, 146, 20);
 																																				panelGameL.add(progressBarEnergy_1);
 																																				this.progressBarEnergy = progressBarEnergy_1;
+																																						
+																																						JLabel lblMap = new JLabel("");
+																																						lblMap.setIcon(new ImageIcon(MainMenu.class.getResource("/Belfast-map.png")));
+																																						lblMap.setBounds(21, 300, 350, 261);
+																																						panelGameL.add(lblMap);
 																																				
 																																						JLabel lblStatus = new JLabel("Status");
 																																						lblStatus.setBounds(469, 50, 61, 16);
@@ -640,5 +751,4 @@ java.io.Serializable {
 			}
 		});
 	}
-
 }

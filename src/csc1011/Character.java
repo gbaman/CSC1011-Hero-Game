@@ -11,6 +11,16 @@ java.io.Serializable {
 	ArrayList<AvailablePlayers> Players;
 	ArrayList<Items> InventoryArmor;
 	int money = 0;
+	Location CLocation;
+
+	public void setLocation(Location l){
+		this.CLocation = l;
+	}
+	
+	public Location getCLocation(){
+		return this.CLocation;
+	}
+	
 	public int getMoney() {
 		return this.money;
 	}
