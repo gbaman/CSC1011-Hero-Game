@@ -13,6 +13,8 @@ public class GameBackgroundThread implements Runnable {
 		int modifier = 0;
 		System.out.println("Action " + m.getAction());
 		while (m.GameRunning == true){
+			m.UpdateMap();
+			System.out.println("Looping background. Modifier - "+ modifier );
 			try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {
@@ -25,7 +27,8 @@ public class GameBackgroundThread implements Runnable {
 					System.out.println("Running random gen " + rand);
 					if (rand > 85){
 						System.out.println(rand);
-						m.GenerateCrime();
+						//m.GenerateCrime();
+						m.MapCrime();
 						modifier = 0;
 					}else{
 						modifier = modifier + 5;

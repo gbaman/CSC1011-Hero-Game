@@ -20,6 +20,14 @@ java.io.Serializable {
 	int CrimeExpire = 20;
 	
 	
+	public int getCrimeExpire() {
+		return CrimeExpire;
+	}
+
+	public void setCrimeExpire(int crimeExpire) {
+		CrimeExpire = crimeExpire;
+	}
+
 	public enum CrimeSeverityLevel {
 		Low, Medium, Severe
 	}

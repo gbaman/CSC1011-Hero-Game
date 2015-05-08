@@ -9,6 +9,10 @@ public class Hero extends Character {
 	
 	MainMenu m;
 	ArrayList<Crime> CrimeList;
+	public void setCrimeList(ArrayList<Crime> crimeList) {
+		this.CrimeList = crimeList;
+	}
+
 	ArrayList<AvailablePlayers> Players;
 	AvailablePlayers player;
 	public Hero(MainMenu m){
