@@ -17,7 +17,10 @@ java.io.Serializable {
 	private ArrayList<MapButton> SaveMapButtons;
 	ArrayList<Items> InventoryGadget;
 	String Name = null;
-
+	
+	public void clearM(){
+		
+	}
 
 	public ArrayList<MapButton> getSaveMapButtons() {
 		return SaveMapButtons;

@@ -112,6 +112,14 @@ java.io.Serializable {
 	private double TravelModifier = 1;
 	private double FightEnergyModifier = 1;
 	private double ActionMonifier = 1;
+	private double FightWinModifier = 1;
+	
+	public double getFightWinModifier() {
+		return FightWinModifier;
+	}
+	public void setFightWinModifier(double fightWinModifier) {
+		FightWinModifier = fightWinModifier;
+	}
 	public double getTravelModifier() {
 		return TravelModifier;
 	}
@@ -250,24 +258,22 @@ java.io.Serializable {
 		(new Thread(new GameBackgroundThread(this))).start();
 		c.ResetM(this);
 		this.GetModifiers();
-		DISABLEDEVTEST();
 		c.setupDisplay();
 
 	}
 	
-	public void DISABLEDEVTEST(){
-		this.c.setMoney(100000);
-	}
 
 	public void SaveGame(){
 		try {
-			FileOutputStream f_out = new FileOutputStream("myobject.data");
+			FileOutputStream f_out = new FileOutputStream("SuperSaveGame.data");
 			ObjectOutputStream obj_out = new ObjectOutputStream (f_out);
+			c.clearM();
 			c.setSaveActionBar(this.getAction());
 			c.setSaveEnergyBar(this.getEnergy());
-			c.setSaveMapButtons(this.getMapButtons());
+			//c.setSaveMapButtons(this.getMapButtons());
 			obj_out.writeObject (c);
 			obj_out.close();
+			JOptionPane.showMessageDialog(null,"Game has been saved.", "Save complete", JOptionPane.INFORMATION_MESSAGE);
 
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -281,7 +287,7 @@ java.io.Serializable {
 	public void LoadGame(){
 		FileInputStream f_in;
 		try {
-			f_in = new FileInputStream("myobject.data");
+			f_in = new FileInputStream("SuperSaveGame.data");
 			ObjectInputStream obj_in = new ObjectInputStream (f_in);
 			Object obj = obj_in.readObject();
 
@@ -289,12 +295,19 @@ java.io.Serializable {
 			{
 				Character player = (Character) obj;
 				obj_in.close();
+				this.hideAllPanels();
+				panelGame.setVisible(true);
 				this.setAction(player.getSaveActionBar());
 				this.setEnergy(player.getSaveEnergyBar());
-				this.setMapButtons(player.getSaveMapButtons());
+				//this.setMapButtons(player.getSaveMapButtons());
+				//this.setMapButtons(null);
+				player.setSaveMapButtons(null);
+				//obj = null;
+				//FixMapButtonsLoad(player);
 				System.out.println(player.getSaveActionBar());
 				System.out.println("Hello");
-				System.out.println(this.getMapButtons().get(3).getCrime().getCrimeSeverity());
+				//System.out.println(this.getMapButtons().get(3).getCrime().getCrimeSeverity());
+				//this.CreateMapButtons();
 				this.setDeductEnergy(true);
 				this.hideAllPanels();
 				panelGame.setVisible(true);
@@ -311,6 +324,18 @@ java.io.Serializable {
 			e.printStackTrace();
 		}
 
+	}
+	
+	private Character FixMapButtonsLoad(Character player){
+		CreateMapButtons();
+		ArrayList<MapButton> OldCrimeList = player.getSaveMapButtons();
+		for (int count = 0; count < OldCrimeList.size(); count++) {
+			this.getMapButtons().get(count).setCrime(OldCrimeList.get(count).getCrime());
+			if (OldCrimeList.get(count).getCrime() != null){
+				System.out.println("Imporing " + OldCrimeList.get(count).getCrime());
+			}
+		}
+		return null;
 	}
 
 	public String askName(){
@@ -630,27 +655,33 @@ java.io.Serializable {
 				} break;
 			
 			}
-			
 		}
-		System.out.println(this.getTravelModifier() +" " + this.getFightEnergyModifier() + " " + this.getActionMonifier());
+		ArrayList<Items> Armors = this.c.InventoryArmor;
+		for (int count = 0; count < Armors.size(); count++) {
+			if (Armors.get(count).getModifier() > this.getFightWinModifier()){
+				this.setFightWinModifier(Armors.get(count).getModifier());
+			}
+		}
+		System.out.println(this.getTravelModifier() +" " + this.getFightEnergyModifier() + " " + this.getActionMonifier() + " " + this.getFightWinModifier());
 		
 	}
 
 	public void UpdateMap(){
-		for (int count = 0; count < MapButtons.size(); count++) {
-			MapButton current = MapButtons.get(count);
+		for (int count = 0; count < this.MapButtons.size(); count++) {
+			MapButton current = this.getMapButtons().get(count);
+					//this.MapButtons.get(count);
 			if (current.getCLocation() == this.c.getCLocation()){
 				current.setText("X");
 				if  (current.getCrime() != null){
 					GenerateCrime();
 					current.setCrime(null);
-
 				}
 			}else{
 				if (current.getCrime() == null){
-					current.setText("");
+					current.setText("-");
 				}else{
 					System.out.println("Non null map zone at " + current.getName() + " " + current.getCrime().getCrimeExpire());
+					//current.setVisible(false);
 					Crime z = current.getCrime();
 					int x = z.getCrimeExpire();		
 					current.setText("" + x);
@@ -676,6 +707,9 @@ java.io.Serializable {
 		this.setDeductEnergy(false);
 		this.endNewSleep();
 		int neededEnergy = (int)((distance/10) * this.getTravelModifier());
+		//b.setVisible(false);
+		b.setCrime(c.getRandomCrime(c.getCrimeList()));
+		System.out.println(b.getCrime());
 		int yesNo = JOptionPane.showConfirmDialog(null, "Are you sure you would like to move zone to " + b.getName()+ "? It will take " + neededEnergy + " energy." , "Move zone", JOptionPane.YES_NO_OPTION);
 		if (yesNo == JOptionPane.YES_OPTION){
 			if (this.getEnergy() < distance/10){
@@ -845,6 +879,7 @@ java.io.Serializable {
 		this.lblPunchesRemaining = lblPunchesRemaining;
 
 		JPanel panelGameL = new JPanel();
+		panelGameL.setBackground(new Color(238, 238, 238));
 		contentPane.add(panelGameL, "name_226128012451582");
 		this.panelGame = panelGameL;
 		panelGameL.setLayout(null);
@@ -982,7 +1017,7 @@ java.io.Serializable {
 														btnHero.addActionListener(new ActionListener() {
 															public void actionPerformed(ActionEvent e) {
 																hideAllPanels();
-																panelGame.setBackground(Color.BLUE);
+																//panelGame.setBackground(Color.BLUE);
 																panelGame.setVisible(true);
 																Hero player = CreateHero();
 																RunGame(player);

@@ -1,10 +1,18 @@
 package csc1011;
 
+import java.awt.List;
+
 import javax.swing.JButton;
 
 public class MapButton extends JButton implements
 java.io.Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3945925613314547956L;
+
+	
 	public String getName() {
 		return this.CLocation.getName();
 	}

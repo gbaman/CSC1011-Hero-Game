@@ -9,7 +9,7 @@ java.io.Serializable {
 		super(name, code);
 		this.fightSuccess = fightSuccess;
 		this.setPrice(price); 
-		this.setModifierText("Increases chance of fight success by ");
+		this.setModifierText("Increases chance of success by ");
 	}
 
 	@Override

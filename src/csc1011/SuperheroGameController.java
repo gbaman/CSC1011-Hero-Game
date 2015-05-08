@@ -37,10 +37,10 @@ public class SuperheroGameController {
 		//frame.setVisible(true);
 		//frame.c.
 		
-	}
+	}}
 
 	
-	public static MainMenu LoadGame(){
+/*	public static MainMenu LoadGame(){
 		FileInputStream f_in;
 		try {
 			f_in = new FileInputStream("myobject.data");
@@ -87,3 +87,4 @@ public class SuperheroGameController {
 		});
 	}
 }
+*/

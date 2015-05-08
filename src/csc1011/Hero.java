@@ -24,6 +24,10 @@ public class Hero extends Character {
 		//m.progressBarStatus.setBackground(bg);
 		
 	}
+	@Override
+	public void clearM(){
+		this.m = null;
+	}
 	
 	public void ResetM(MainMenu a){
 		this.m = a;
@@ -44,15 +48,15 @@ public class Hero extends Character {
 		System.out.println(this.Name);
 		if (this.Name == null){
 			m.setName(m.askName());
+			this.CrimeList = CreateCrimesList();
+			this.Players = definePlayers();
 		}else{
 			m.setName(this.Name);
 		}
 		m.setBackgroundCrime(true);
 		System.out.println(m.lblCharImageGame.getIcon());
 		//m.setAction(m.startActionLevel);
-		this.CrimeList = CreateCrimesList();
-		this.Players = definePlayers();
-		m.progressBarStatus.setString("Hero");
+		//m.progressBarStatus.setString("Hero");
 	}
 
 

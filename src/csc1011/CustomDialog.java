@@ -23,6 +23,7 @@ import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridLayout;
 import java.util.ArrayList;
+import java.awt.Font;
 
 
 public class CustomDialog extends JDialog {
@@ -160,11 +161,14 @@ public class CustomDialog extends JDialog {
 		DefaultListModel<Items> FoodListModel = new DefaultListModel<>();
 		// (Name, filename, price, modifier)
 		//.addElement(new Food("", "", 20, 10));
+		//									Name, PictureName, Price, modifier
 		FoodListModel.addElement(new Food("Apple", "Apple", 20, 10));
 		FoodListModel.addElement(new Food("Toast", "Toast-Bread", 50, 20));
+		FoodListModel.addElement(new Food("Chicken", "Chicken", 100, 40));
 
 		DefaultListModel<Items> ArmorListModel = new DefaultListModel<>();
-		ArmorListModel.addElement(new Clothing("Suit", "Suit", 20, 10));
+		ArmorListModel.addElement(new Clothing("Bulletproof Vest", "BP-Vest", 300, 1.2));
+		ArmorListModel.addElement(new Clothing("Leather vest", "Leather-Vest", 150, 1.1));
 
 		DefaultListModel<Items> GadgetListModel = new DefaultListModel<>();
 		GadgetListModel.addElement(new Gadget("Slow Car", "Slow-Car", 150, 0.9, Gadget.ModifierType.Travel));
@@ -399,7 +403,8 @@ public class CustomDialog extends JDialog {
 			panelShopOver.add(btnBuyGadget);
 
 			JLabel labelMoney = new JLabel("");
-			labelMoney.setBounds(39, 540, 57, 15);
+			labelMoney.setFont(new Font("SansSerif", Font.PLAIN, 18));
+			labelMoney.setBounds(54, 540, 78, 35);
 			panelShopOver.add(labelMoney);
 			this.labelMoney = labelMoney;
 
@@ -411,6 +416,11 @@ public class CustomDialog extends JDialog {
 			});
 			btnBackToGame.setBounds(6, 6, 111, 27);
 			panelShopOver.add(btnBackToGame);
+			
+			JLabel lblCurrentMoney = new JLabel("Current Money");
+			lblCurrentMoney.setFont(new Font("SansSerif", Font.BOLD, 22));
+			lblCurrentMoney.setBounds(18, 497, 167, 31);
+			panelShopOver.add(lblCurrentMoney);
 			this.setLabelMoney(this.m.c.getMoney());
 
 		}
