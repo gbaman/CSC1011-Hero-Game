@@ -92,8 +92,6 @@ java.io.Serializable {
 	}
 	
 	public abstract void ResetM(MainMenu a);
-
-	public abstract void talk();
 	
 	public abstract void setupDisplay();
 	

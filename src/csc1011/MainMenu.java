@@ -3,6 +3,9 @@ package csc1011;
 import java.awt.Color;
 import java.awt.EventQueue;
 
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
 import javax.swing.ButtonGroup;
 import javax.swing.ButtonModel;
 import javax.swing.DefaultListModel;
@@ -82,9 +85,11 @@ java.io.Serializable {
 	JLabel lblCharName;
 	ImageIcon imgBat = new ImageIcon(getClass().getResource("/The_Batman.jpg"));
 	ImageIcon imgBatSleep = new ImageIcon(getClass().getResource("/The_Batman_Sleeping.jpg"));
-	ImageIcon imgJoke = new ImageIcon(getClass().getResource("/Mortal_Kombat_Joker.jpg"));
+	ImageIcon imgJoke = new ImageIcon(getClass().getResource("/JokerMed.jpg"));
+	ImageIcon imgJokeSmall = new ImageIcon(getClass().getResource("/JokerSmall.jpg"));
 	ImageIcon imgBankRobber = new ImageIcon(getClass().getResource("/bank-robber.jpg")); 
 	ImageIcon goth1 = new ImageIcon(getClass().getResource("/large/gothback1.jpg"));
+	ImageIcon smallBat = new ImageIcon(MainMenu.class.getResource("/Large/The_BatmanSmall.jpg"));
 	int startActionLevel = 60;
 	JButton btnSleep;
 	JButton btnGenCrime;
@@ -100,7 +105,30 @@ java.io.Serializable {
 	private boolean easyMode;
 	private JButton btnSave;
 	private JButton btnOpenshop;
+	private int punchLeft;
+	private int punchTimerLeft;
+	private JLabel lblTimeRemaining;
+	private Boolean punchWin;
+	public JLabel getLblTimeRemaining() {
+		return lblTimeRemaining;
+	}
+	public void setLblTimeRemaining(JLabel lblTimeRemaining) {
+		this.lblTimeRemaining = lblTimeRemaining;
+	}
+	private JLabel lblPunchesRemaining;
 
+	public int getPunchTimerLeft() {
+		return punchTimerLeft;
+	}
+	public void setPunchTimerLeft(int punchTimerLeft) {
+		this.punchTimerLeft = punchTimerLeft;
+	}
+	public int getPunchLeft() {
+		return punchLeft;
+	}
+	public void setPunchLeft(int punchLeft) {
+		this.punchLeft = punchLeft;
+	}
 	public boolean isEasyMode() {
 		return easyMode;
 	}
@@ -322,24 +350,6 @@ java.io.Serializable {
 		 */
 	}
 
-	public void runTest2(){
-		/*this.setEnabled(false);
-		try {
-			Thread.sleep(4000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		this.setEnabled(true); */
-		//CustomDialogs.main();
-
-
-
-		//CustomDialog.main();
-		System.out.println(dialogRun("SelectCharacterDialog"));
-
-	}
-
 	public String dialogRun(String DialogType){
 		String message = null;
 		try {
@@ -486,9 +496,6 @@ java.io.Serializable {
 		this.setBackgroundCrime(true);
 	}
 
-	public void newCrimeDialog(){
-
-	}
 
 	public void MapCrime(){
 		int ranIndex = this.getRandom(0,  this.getMapButtons().size());
@@ -502,20 +509,86 @@ java.io.Serializable {
 			ArrayList<MapButton> MB = this.getMapButtons();
 			MB.set((ranIndex), updatedZone);
 			this.setMapButtons(MB); 
+			playDing();
 
 		}
 
 	}
-
-	public void punchMiniGame(){
-		int x = getRandom(0,this.getWidth() - 100);
-		int y = getRandom(0,this.getHeight() - 100);
+	
+	private void punchMiniGameEnd(Boolean win){
+		this.timer.stop();
+		if (win){
+			
+			System.out.println("You win");
+			this.punchWin = true;
+		}else{
+			System.out.println("You loose");
+			this.punchWin = false;
+		}
+		
+	}
+	
+	private Boolean punchMiniGameSetup(int punches){
+		this.punchWin = null;
+		this.setPunchLeft(punches);
+		this.setPunchTimerLeft(10);
+		this.punchMiniGameBackground();
 		this.hideAllPanels();
 		this.panelFight.setVisible(true);
+		punchMiniGame();
+		/*while (this.punchWin == null){
+			try {
+				Thread.sleep(300);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}*/
+		return this.punchWin;
+	}
+	
+
+	public void punchMiniGame(){
+		
+		int x = getRandom(0,this.getWidth() - 300);
+		int y = getRandom(0,this.getHeight() - 100);
 		this.btnPunch.setLocation(x, y);
 		System.out.println(x);
 		System.out.println(y);
+		punchMiniGameUpdate();
 	}
+	
+	private void punchMiniGameUpdate(){
+		this.setPunchLeft(this.getPunchLeft() - 1);
+		this.lblPunchesRemaining.setText("Punches reamining - " + this.getPunchLeft());
+		if (this.getPunchLeft() < 1){
+			punchMiniGameEnd(true);
+		}
+	}
+	
+	private void punchMiniGameAdjust(){
+		this.setPunchTimerLeft(this.getPunchTimerLeft() - 1);
+		this.lblTimeRemaining.setText(""+this.getPunchTimerLeft());
+		if (this.getPunchTimerLeft() < 1){
+			punchMiniGameEnd(false);
+		}
+	}
+	
+	public void punchMiniGameBackground(){
+		Timer timer = new Timer(1000, new ActionListener() {
+
+			@Override
+		    public void actionPerformed(ActionEvent arg0) { 
+				punchMiniGameAdjust();
+				System.out.println("Timer hit!");
+			}
+		});
+		this.timer = timer;
+		timer.setRepeats(true);
+		timer.start();	
+	}
+	
+
 
 	public void UpdateMap(){
 		for (int count = 0; count < MapButtons.size(); count++) {
@@ -596,8 +669,40 @@ java.io.Serializable {
 			});
 		}
 	}
+	
+	private void playDing(){
+		try{
+		    AudioInputStream audioInputStream =
+		        AudioSystem.getAudioInputStream(
+		            this.getClass().getResource("/Ding3.aiff"));
+		    Clip clip = AudioSystem.getClip();
+		    clip.open(audioInputStream);
+		    //System.out.println("Playing Music!");
+		    clip.start();
+		}
+		catch(Exception ex)
+		{
+			ex.printStackTrace();
+		}
+	}
+	
+	private void playMusic(){
+		try{
+		    AudioInputStream audioInputStream =
+		        AudioSystem.getAudioInputStream(
+		            this.getClass().getResource("/DramaticMusic5.aiff"));
+		    Clip clip = AudioSystem.getClip();
+		    clip.open(audioInputStream);
+		    System.out.println("Playing Music!");
+		    clip.start();
+		}
+		catch(Exception ex)
+		{
+			ex.printStackTrace();
+		}
+	}
 
-	private void hideAllPanels(){
+	public void hideAllPanels(){
 		this.panelFight.setVisible(false);
 		this.panelGame.setVisible(false);
 		this.panelGameSetup.setVisible(false);
@@ -608,6 +713,7 @@ java.io.Serializable {
 	 */
 
 	public MainMenu() {
+		this.playMusic();
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 800, 600);
 		contentPane = new JPanel();
@@ -620,43 +726,34 @@ java.io.Serializable {
 		panelMenuL.setLayout(null);
 
 		JButton btnHero = new JButton("Hero");
-		btnHero.setBounds(19, 43, 117, 29);
+		btnHero.setBounds(32, 98, 117, 29);
 		panelMenuL.add(btnHero);
 
 		JButton btnVillian = new JButton("Villian");
-		btnVillian.setBounds(19, 86, 117, 29);
+		btnVillian.setBounds(32, 139, 117, 29);
 		panelMenuL.add(btnVillian);
 
 		final JLabel lblCharImage = new JLabel("");
-		lblCharImage.setIcon(imgBat);
-		lblCharImage.setBounds(171, 2, 345, 566);
+		lblCharImage.setIcon(smallBat);
+		lblCharImage.setBounds(445, 42, 345, 198);
 		panelMenuL.add(lblCharImage);
 		this.panelMenu = panelMenuL;
 
-		JButton btnTest = new JButton("Test");
+		JButton btnTest = new JButton("Load game");
 		btnTest.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				runTest();
 			}
 		});
-		btnTest.setBounds(19, 139, 117, 29);
+		btnTest.setBounds(304, 201, 117, 29);
 		panelMenuL.add(btnTest);
-
-		JButton btnTest_1 = new JButton("Test2");
-		btnTest_1.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				runTest2();
-			}
-		});
-		btnTest_1.setBounds(19, 180, 117, 29);
-		panelMenuL.add(btnTest_1);
 		
 		JRadioButton rdbtnEasy = new JRadioButton("Easy", true);
-		rdbtnEasy.setBounds(494, 54, 141, 23);
+		rdbtnEasy.setBounds(232, 98, 141, 23);
 		panelMenuL.add(rdbtnEasy);
 		
 		JRadioButton rdbtnHard = new JRadioButton("Hard", false);
-		rdbtnHard.setBounds(494, 87, 141, 23);
+		rdbtnHard.setBounds(232, 140, 141, 23);
 		panelMenuL.add(rdbtnHard);
 		ButtonGroup b = new ButtonGroup();
 		b.add(rdbtnEasy);
@@ -675,10 +772,30 @@ java.io.Serializable {
 				punchMiniGame();
 			}
 		});
-		btnPunch.setBounds(507, 210, 69, 29);
+		btnPunch.setBounds(509, 196, 67, 43);
 		panelFight.add(btnPunch);
 		this.panelFight = panelFight;
 		this.btnPunch = btnPunch;
+		
+		JLabel lblNewLabel = new JLabel("");
+		lblNewLabel.setIcon(new ImageIcon(MainMenu.class.getResource("/Criminal.jpg")));
+		lblNewLabel.setBounds(16, 17, 581, 545);
+		panelFight.add(lblNewLabel);
+		
+		JLabel lblPunchHim = new JLabel("Punch him!");
+		lblPunchHim.setFont(new Font("Lucida Grande", Font.PLAIN, 18));
+		lblPunchHim.setBounds(619, 29, 141, 53);
+		panelFight.add(lblPunchHim);
+		
+		JLabel lblTimeRemaining = new JLabel("Time remaining - ");
+		lblTimeRemaining.setBounds(619, 93, 141, 16);
+		panelFight.add(lblTimeRemaining);
+		this.lblTimeRemaining = lblTimeRemaining;
+		
+		JLabel lblPunchesRemaining = new JLabel("Punches remaining - ");
+		lblPunchesRemaining.setBounds(609, 126, 151, 16);
+		panelFight.add(lblPunchesRemaining);
+		this.lblPunchesRemaining = lblPunchesRemaining;
 
 		JPanel panelGameL = new JPanel();
 		contentPane.add(panelGameL, "name_226128012451582");
@@ -705,7 +822,7 @@ java.io.Serializable {
 		this.lblSleeping.setText("");
 
 		JLabel lblCharImageGame_1 = new JLabel("");
-		lblCharImageGame_1.setBounds(26, 0, 345, 261);
+		lblCharImageGame_1.setBounds(21, 6, 345, 293);
 		panelGameL.add(lblCharImageGame_1);
 		this.lblCharImageGame = lblCharImageGame_1;
 
@@ -785,44 +902,74 @@ java.io.Serializable {
 		lblCharName_1.setBounds(469, 6, 262, 29);
 		panelGameL.add(lblCharName_1);
 		this.lblCharName = lblCharName_1;
+		
+		JLabel lblBehind = new JLabel("");
+		lblBehind.setIcon(new ImageIcon(MainMenu.class.getResource("/Large/BackRec.jpg")));
+		lblBehind.setBounds(452, 6, 318, 173);
+		panelGameL.add(lblBehind);
 
 		JLabel BackgroundImg = new JLabel("");
 		BackgroundImg.setIcon(new ImageIcon(MainMenu.class.getResource("/Large/gothback1.jpg")));
 		BackgroundImg.setBounds(6, 0, 784, 568);
 		panelGameL.add(BackgroundImg);
+														
+														JLabel lblBackground2 = new JLabel("");
+														lblBackground2.setIcon(new ImageIcon(MainMenu.class.getResource("/Large/gothback1.jpg")));
+														lblBackground2.setBounds(0, 242, 784, 326);
+														panelMenuL.add(lblBackground2);
+														
+														JLabel lblCsc = new JLabel("CSC1009 Superhero Assesment");
+														lblCsc.setFont(new Font("Lucida Grande", Font.BOLD, 20));
+														lblCsc.setBounds(192, 6, 325, 25);
+														panelMenuL.add(lblCsc);
+														
+														JLabel lblDofficulty = new JLabel("Difficulty");
+														lblDofficulty.setFont(new Font("Lucida Grande", Font.BOLD, 16));
+														lblDofficulty.setBounds(232, 70, 85, 16);
+														panelMenuL.add(lblDofficulty);
+														
+														JLabel lblClass = new JLabel("Class");
+														lblClass.setFont(new Font("Lucida Grande", Font.BOLD, 16));
+														lblClass.setBounds(51, 71, 85, 16);
+														panelMenuL.add(lblClass);
+														btnHero.addActionListener(new ActionListener() {
+															public void actionPerformed(ActionEvent e) {
+																hideAllPanels();
+																panelGame.setBackground(Color.BLUE);
+																panelGame.setVisible(true);
+																Hero player = CreateHero();
+																RunGame(player);
+															}
+														});
+														btnVillian.addActionListener(new ActionListener() {
+															public void actionPerformed(ActionEvent e) {
+																hideAllPanels();
+																panelGame.setVisible(true);
+																Villain player = CreateVillain();
+																RunGame(player);
+															}
+														});
+														btnHero.addMouseListener(new MouseAdapter() {
+															@Override
+															public void mouseEntered(MouseEvent arg0) {
+																lblCharImage.setIcon(smallBat);
+															}
+														});
+														btnVillian.addMouseListener(new MouseAdapter() {
+															@Override
+															public void mouseEntered(MouseEvent e) {
+																lblCharImage.setIcon(imgJokeSmall);
+															}
+														});
 
 		JPanel panelGameSetup = new JPanel();
 		contentPane.add(panelGameSetup, "name_307894030242621");
 		this.panelGameSetup = panelGameSetup;
-		btnHero.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				hideAllPanels();
-				panelGame.setBackground(Color.BLUE);
-				panelGame.setVisible(true);
-				Hero player = CreateHero();
-				RunGame(player);
-			}
-		});
-		btnVillian.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				hideAllPanels();
-				panelGame.setVisible(true);
-				Villain player = CreateVillain();
-				RunGame(player);
-			}
-		});
-		btnHero.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-				lblCharImage.setIcon(imgBat);
-			}
-		});
-		btnVillian.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent e) {
-				lblCharImage.setIcon(imgJoke);
-			}
-		});
+		/*this.hideAllPanels();
+		this.panelMenu.setVisible(true);
+		progressBarAction.setStringPainted(true);
+		progressBarAction.setForeground(Color.blue);
+		progressBarAction.setString("10%");*/
 	}
 	public JPanel getPanelGameSetup() {
 		return panelGameSetup;

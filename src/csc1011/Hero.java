@@ -39,13 +39,6 @@ public class Hero extends Character {
 		return CrimeList;
 	}
 	@Override
-	public void talk(){
-		System.out.println("Talking as a hero!");
-		m.panelMenu.setVisible(false);
-		m.panelGame.setVisible(true);
-		//m.panelMenu.setVisible(true);
-	}
-	@Override
 	public void setupDisplay() {
 		m.setCharImageGame(m.imgBat);
 		System.out.println(this.Name);
@@ -90,10 +83,12 @@ public class Hero extends Character {
 	public void checkAction() {
 		if (m.getAction() > 99){
 			JOptionPane.showMessageDialog(null, "You have won!", "Victory!", JOptionPane.ERROR_MESSAGE);
-			m.displayEnd();
+			m.hideAllPanels();
+			m.panelMenu.setVisible(true);
+			//m.displayEnd();
 		}else{
 			if (m.getAction() > 80){
-				m.progressBarStatus.setString("Superhero");
+				m.progressBarStatus.setString("SuperVillain");
 			}
 		}
 		
