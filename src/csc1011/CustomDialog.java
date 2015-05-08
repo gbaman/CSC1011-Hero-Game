@@ -76,7 +76,7 @@ public class CustomDialog extends JDialog {
 			TheCrime = new Crime("crime", Crime.CrimeSeverityLevel.easy);
 		}
 		System.out.println(TheCrime.getName());
-		this.setSize(350,300);
+		this.setSize(350,320);
 		System.out.println("Crime Dialog!");
 		ImageIcon imgCrime = new ImageIcon(getClass().getResource("/Crime-Pix.jpg"));
 		this.lblCrimeIcon.setIcon(imgCrime);
@@ -94,6 +94,7 @@ public class CustomDialog extends JDialog {
 		if (interupt){
 			this.DialogCloser.interrupt();
 		}
+		m.GetModifiers();
 		dispose();
 		System.out.println("Disposed!");
 	}
@@ -311,7 +312,7 @@ public class CustomDialog extends JDialog {
 			PanelCrimeGen.setLayout(null);
 			{
 				JLabel lblACrimeIs = new JLabel("");
-				lblACrimeIs.setBounds(53, 119, 270, 79);
+				lblACrimeIs.setBounds(22, 119, 329, 79);
 				PanelCrimeGen.add(lblACrimeIs);
 				this.lblACrimeIs = lblACrimeIs;
 			}
@@ -341,7 +342,7 @@ public class CustomDialog extends JDialog {
 			PanelCrimeGen.add(btnYes);
 
 			JLabel lblCrimeIcon = new JLabel("");
-			lblCrimeIcon.setBounds(91, 28, 232, 79);
+			lblCrimeIcon.setBounds(90, 17, 232, 79);
 			PanelCrimeGen.add(lblCrimeIcon);
 			this.PanelCrimeGen = PanelCrimeGen;
 			this.lblCrimeIcon = lblCrimeIcon;

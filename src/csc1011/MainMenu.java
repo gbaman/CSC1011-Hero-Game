@@ -109,6 +109,27 @@ java.io.Serializable {
 	private int punchTimerLeft;
 	private JLabel lblTimeRemaining;
 	private Boolean punchWin;
+	private double TravelModifier = 1;
+	private double FightEnergyModifier = 1;
+	private double ActionMonifier = 1;
+	public double getTravelModifier() {
+		return TravelModifier;
+	}
+	public void setTravelModifier(double travelModifier) {
+		TravelModifier = travelModifier;
+	}
+	public double getFightEnergyModifier() {
+		return FightEnergyModifier;
+	}
+	public void setFightEnergyModifier(double fightEnergyModifier) {
+		FightEnergyModifier = fightEnergyModifier;
+	}
+	public double getActionMonifier() {
+		return ActionMonifier;
+	}
+	public void setActionMonifier(double actionMonifier) {
+		ActionMonifier = actionMonifier;
+	}
 	public JLabel getLblTimeRemaining() {
 		return lblTimeRemaining;
 	}
@@ -161,14 +182,14 @@ java.io.Serializable {
 	}
 
 	public void setBackgroundCrime(Boolean backgroundCrime) {
-		System.out.println("Setting backgroundCrime to " + backgroundCrime);
+		//System.out.println("Setting backgroundCrime to " + backgroundCrime);
 		BackgroundCrime = backgroundCrime;
 	}
 
 	public void setEnergy(int value){
 		this.progressBarEnergy.setValue(value);
-		System.out.println(value);
-		System.out.println(this.getEnergy());
+		//System.out.println(value);
+		//System.out.println(this.getEnergy());
 	}
 
 	public int getEnergy(){
@@ -228,6 +249,7 @@ java.io.Serializable {
 		(new Thread(new EnergyCountDown(this))).start();
 		(new Thread(new GameBackgroundThread(this))).start();
 		c.ResetM(this);
+		this.GetModifiers();
 		DISABLEDEVTEST();
 		c.setupDisplay();
 
@@ -272,6 +294,7 @@ java.io.Serializable {
 				this.setMapButtons(player.getSaveMapButtons());
 				System.out.println(player.getSaveActionBar());
 				System.out.println("Hello");
+				System.out.println(this.getMapButtons().get(3).getCrime().getCrimeSeverity());
 				this.setDeductEnergy(true);
 				this.hideAllPanels();
 				panelGame.setVisible(true);
@@ -462,6 +485,7 @@ java.io.Serializable {
 				ActionGained = 10;
 				MoneyGained = 50;
 				EnergyLoss = getRandom(5, 15);
+				EnergyLoss = (int) (EnergyLoss * this.getFightEnergyModifier());
 				setEnergy(getEnergy() - EnergyLoss);
 				c.adjustAction(ActionGained);
 				JOptionPane.showMessageDialog(null, "Crime successfully stopped! You lost " + EnergyLoss + " energy!", "Crime stopped!", JOptionPane.INFORMATION_MESSAGE);
@@ -469,7 +493,7 @@ java.io.Serializable {
 
 			}else
 			{	
-				EnergyLoss = 20;
+				EnergyLoss = (int) 20;// * this.FightEnergyModifier ;
 				JOptionPane.showMessageDialog(null, "Crime stopping failed! You lost " + EnergyLoss + " energy!", "Failed!", JOptionPane.ERROR_MESSAGE);
 				setEnergy(getEnergy() - EnergyLoss);
 				c.adjustAction(-5);
@@ -588,7 +612,29 @@ java.io.Serializable {
 		timer.start();	
 	}
 	
-
+	public void GetModifiers(){
+		ArrayList<Items> Gadgets = this.c.InventoryGadget;
+		for (int count = 0; count < Gadgets.size(); count++) {
+			switch (Gadgets.get(count).getModifierText()){
+			case "Travel costs x" : 
+				if (Gadgets.get(count).getModifier() < this.getTravelModifier()){
+					this.setTravelModifier(Gadgets.get(count).getModifier());
+				} break;
+			case "Crime fight energy cost x" : 
+				if (Gadgets.get(count).getModifier() < this.getFightEnergyModifier()){
+					this.setFightEnergyModifier(Gadgets.get(count).getModifier());
+				} break;
+			case "Action generated x" :
+				if (Gadgets.get(count).getModifier() > this.getActionMonifier()){
+					this.setActionMonifier(Gadgets.get(count).getModifier());
+				} break;
+			
+			}
+			
+		}
+		System.out.println(this.getTravelModifier() +" " + this.getFightEnergyModifier() + " " + this.getActionMonifier());
+		
+	}
 
 	public void UpdateMap(){
 		for (int count = 0; count < MapButtons.size(); count++) {
@@ -629,10 +675,11 @@ java.io.Serializable {
 		this.setBackgroundCrime(false);
 		this.setDeductEnergy(false);
 		this.endNewSleep();
-		int yesNo = JOptionPane.showConfirmDialog(null, "Are you sure you would like to move zone to " + b.getName()+ "? It will take " + distance/10 + " energy." , "Move zone", JOptionPane.YES_NO_OPTION);
+		int neededEnergy = (int)((distance/10) * this.getTravelModifier());
+		int yesNo = JOptionPane.showConfirmDialog(null, "Are you sure you would like to move zone to " + b.getName()+ "? It will take " + neededEnergy + " energy." , "Move zone", JOptionPane.YES_NO_OPTION);
 		if (yesNo == JOptionPane.YES_OPTION){
 			if (this.getEnergy() < distance/10){
-				JOptionPane.showMessageDialog(null, "Unable to move zone, you need  " + (this.getEnergy() - distance/10) + " more energy.", "Failed!", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(null, "Unable to move zone, you need  " + (this.getEnergy() - neededEnergy) + " more energy.", "Failed!", JOptionPane.ERROR_MESSAGE);
 			} else{
 				this.setEnergy(this.getEnergy() - distance/10);
 				this.c.setLocation(b.getCLocation());
