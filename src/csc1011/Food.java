@@ -1,9 +1,10 @@
 package csc1011;
 
-public class Food extends Items {
-	int energyRestore;
+public class Food extends Items implements
+java.io.Serializable {
+	double energyRestore;
 	
-	public Food(String name, String code, int price, int energyRestore) {
+	public Food(String name, String code, int price, double energyRestore) {
 		super(name, code);
 		this.energyRestore = energyRestore;
 		this.setPrice(price); 
@@ -11,7 +12,7 @@ public class Food extends Items {
 	}
 
 	@Override
-	public int getModifier() {
+	public double getModifier() {
 		return energyRestore;
 	}
 

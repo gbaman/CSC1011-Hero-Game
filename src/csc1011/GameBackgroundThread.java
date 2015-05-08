@@ -13,17 +13,29 @@ public class GameBackgroundThread implements Runnable {
 		int modifier = 0;
 		System.out.println("Action " + m.getAction());
 		while (m.GameRunning == true){
-			m.UpdateMap();
-			System.out.println("Looping background. Modifier - "+ modifier );
+			if (m.getBackgroundCrime() == true){
+				m.UpdateMap();
+				System.out.println("Looping background. Modifier - "+ modifier );
+			}
 			try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			if (m.btnSleep.getText() == "Awake"){
+				m.progressBarEnergy.setValue(m.progressBarEnergy.getValue()+8);
+				if (m.progressBarEnergy.getValue() == 100){
+					m.endNewSleep();
+				}
+			}
 			if (m.getEnergy() > 20){
+				int rand;
 				if (m.getBackgroundCrime() == true){
-					int rand = m.getRandom(20,70) + modifier;
+					if (m.isEasyMode() == true){
+						rand = m.getRandom(20,70) + modifier;
+					}else{
+						rand = m.getRandom(50,80) + modifier;
+					}
 					System.out.println("Running random gen " + rand);
 					if (rand > 85){
 						System.out.println(rand);

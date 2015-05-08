@@ -3,6 +3,8 @@ package csc1011;
 import java.awt.Color;
 import java.awt.EventQueue;
 
+import javax.swing.ButtonGroup;
+import javax.swing.ButtonModel;
 import javax.swing.DefaultListModel;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -35,6 +37,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+
+import javax.swing.JRadioButton;
 
 public class MainMenu extends JFrame implements
 java.io.Serializable {
@@ -91,7 +95,18 @@ java.io.Serializable {
 	private int sleepCounter;
 	private ArrayList<MapButton> MapButtons;
 	private JPanel panelGameSetup;
+	private JRadioButton rdbtnHard;
+	private JRadioButton rdbtnEasy;
+	private boolean easyMode;
+	private JButton btnSave;
+	private JButton btnOpenshop;
 
+	public boolean isEasyMode() {
+		return easyMode;
+	}
+	public void setEasyMode(boolean easyMode) {
+		this.easyMode = easyMode;
+	}
 	public Boolean getGameRunning() {
 		return GameRunning;
 	}
@@ -109,46 +124,7 @@ java.io.Serializable {
 		return random.nextBoolean();
 	}
 
-	//private ImageIcon resizeImage(ImageIcon icon, JLabel lbl){
-	//Image img = icon.getImage(); 
-	//BufferedImage bi = new BufferedImage(img.getWidth(null), img.getHeight(null), BufferedImage.TYPE_INT_ARGB); 
-	//Graphics g = bi.createGraphics(); 
-
-	//icon.paintIcon(null, g, 0,0);
-	//g.dispose();
-	//BufferedImage resizedimage=setSize(bi,lbl.getWidth(), lbl.getHeight());
-	//ImageIcon newIcon=new ImageIcon(resizedimage);
-
-
-	//g.drawImage(img, 0, 0, lbl.getWidth(), lbl.getHeight(), null); 
-	//g.drawImage(img, 0, 0, WIDTH, HEIGHT, null); 
-	//ImageIcon newIcon = new ImageIcon(bi); 
-	//return newIcon;
-	//}
-
 	private ImageIcon resizeImage(ImageIcon icon, JLabel lbl){
-		/*	Image img = icon.getImage(); 
-		int w = lbl.getWidth();
-		int h = lbl.getHeight();
-		BufferedImage src = new BufferedImage(img.getWidth(null), img.getHeight(null), BufferedImage.TYPE_INT_ARGB);
-	    int finalw = w;
-	    int finalh = h;
-	    double factor = 1.0d;
-	    if(src.getWidth() > src.getHeight()){
-	        factor = ((double)src.getHeight()/(double)src.getWidth());
-	        finalh = (int)(finalw * factor);                
-	    }else{
-	        factor = ((double)src.getWidth()/(double)src.getHeight());
-	        finalw = (int)(finalh * factor);
-	    }   
-
-	    BufferedImage resizedImg = new BufferedImage(finalw, finalh, BufferedImage.TRANSLUCENT);
-	    Graphics2D g2 = resizedImg.createGraphics();
-	    g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-	    g2.drawImage(src, 0, 0, finalw, finalh, null);
-	    g2.dispose();
-	    ImageIcon newIcon=new ImageIcon(resizedImg);
-	    return newIcon; */
 		return icon;
 	}
 
@@ -209,11 +185,28 @@ java.io.Serializable {
 		this.c = a;
 		this.GameRunning = true;
 		this.setBackgroundCrime(false);
+		if (this.rdbtnEasy.isSelected() == true){
+			this.easyMode = true;
+		}else{
+			this.easyMode = false;
+		}
+		if (this.isEasyMode() == false){
+			this.btnGenCrime.setEnabled(false);
+		}
+		else{
+			this.btnGenCrime.setEnabled(true);
+		}
+		
 		(new Thread(new EnergyCountDown(this))).start();
 		(new Thread(new GameBackgroundThread(this))).start();
 		c.ResetM(this);
+		DISABLEDEVTEST();
 		c.setupDisplay();
 
+	}
+	
+	public void DISABLEDEVTEST(){
+		this.c.setMoney(100000);
 	}
 
 	public void SaveGame(){
@@ -222,6 +215,7 @@ java.io.Serializable {
 			ObjectOutputStream obj_out = new ObjectOutputStream (f_out);
 			c.setSaveActionBar(this.getAction());
 			c.setSaveEnergyBar(this.getEnergy());
+			c.setSaveMapButtons(this.getMapButtons());
 			obj_out.writeObject (c);
 			obj_out.close();
 
@@ -247,6 +241,7 @@ java.io.Serializable {
 				obj_in.close();
 				this.setAction(player.getSaveActionBar());
 				this.setEnergy(player.getSaveEnergyBar());
+				this.setMapButtons(player.getSaveMapButtons());
 				System.out.println(player.getSaveActionBar());
 				System.out.println("Hello");
 				this.setDeductEnergy(true);
@@ -274,11 +269,17 @@ java.io.Serializable {
 		while (notDone){
 			name = JOptionPane.showInputDialog(null,"Enter a name for your character", "Name", JOptionPane.PLAIN_MESSAGE);
 			c.setName(name);
-			if (name.length() == 0){
+			if (name == null){
 				JOptionPane.showMessageDialog(null, "You must enter a name!", "Failed!", JOptionPane.ERROR_MESSAGE);
-			}
-			else{
-				notDone = false;
+			}else{
+
+
+				if (name.length() == 0){
+					JOptionPane.showMessageDialog(null, "You must enter a name!", "Failed!", JOptionPane.ERROR_MESSAGE);
+				}
+				else{
+					notDone = false;
+				}
 			}
 
 		}
@@ -364,13 +365,36 @@ java.io.Serializable {
 		return message;
 	}
 
+	public void startNewSleep(){
+		this.btnSleep.setText("Awake");
+		this.btnSave.setEnabled(false);
+		this.btnGenCrime.setEnabled(false);
+		this.btnOpenshop.setEnabled(false);
+		this.setDeductEnergy(false);
+		
+	}
+	
+	public void endNewSleep(){
+		this.setDeductEnergy(true);
+		this.btnSleep.setText("Sleep");
+		this.btnGenCrime.setEnabled(true);
+		this.btnSave.setEnabled(true);
+		this.btnOpenshop.setEnabled(true);
+		if (this.isEasyMode()){
+			this.btnGenCrime.setEnabled(true);
+		}
+	}
+	
+	
 	public void startSleep(){
 		this.setBackgroundCrime(false);
 		this.lblSleeping.setEnabled(true);
 		this.btnSleep.setEnabled(false);
 		this.btnGenCrime.setEnabled(false);
 		this.lblCharImageGame.setIcon(imgBatSleep);
+		this.btnSave.setEnabled(false);
 		this.setDeductEnergy(false); 
+		
 		this.sleepCounter = 5;
 		this.lblSleeping.setText("Sleeping.. " + this.sleepCounter);
 		Timer timer = new Timer(1000, new ActionListener() {
@@ -411,6 +435,7 @@ java.io.Serializable {
 		this.setBackgroundCrime(true);
 		this.btnSleep.setEnabled(true);
 		this.btnGenCrime.setEnabled(true);
+		this.btnSave.setEnabled(true);
 		setEnergy(getEnergy() + energyAdd);
 	}
 
@@ -418,6 +443,7 @@ java.io.Serializable {
 		this.setDeductEnergy(false); 
 		this.setBackgroundCrime(false);
 		String crimeResponse = this.dialogRun("CrimeDialog");
+		this.endNewSleep();
 		if (crimeResponse == "yes"){
 			int EnergyLoss;
 			int ActionGained = 0;
@@ -467,11 +493,12 @@ java.io.Serializable {
 	public void MapCrime(){
 		int ranIndex = this.getRandom(0,  this.getMapButtons().size());
 		if (this.getMapButtons().get(ranIndex).getCrime() == null){
-			ArrayList<Crime> CL = this.c.getCrimeList();
-			int ranIndex2 = this.getRandom(0,  CL.size());
+			ArrayList<Crime> CL = this.c.getCrimeList();    //Get the list of crimes
+			int ranIndex2 = this.getRandom(0,  CL.size());  //Generate a random number for selecting a crime
 			MapButton updatedZone = (this.getMapButtons().get(ranIndex));
-			Crime bob = CL.get(ranIndex2);
-			updatedZone.setCrime(bob);
+			Crime IndividualCrime = CL.get(ranIndex2);
+			IndividualCrime.setCrimeExpire(20);
+			updatedZone.setCrime(IndividualCrime);
 			ArrayList<MapButton> MB = this.getMapButtons();
 			MB.set((ranIndex), updatedZone);
 			this.setMapButtons(MB); 
@@ -528,6 +555,7 @@ java.io.Serializable {
 		System.out.println("Distance is "+distance/10);
 		this.setBackgroundCrime(false);
 		this.setDeductEnergy(false);
+		this.endNewSleep();
 		int yesNo = JOptionPane.showConfirmDialog(null, "Are you sure you would like to move zone to " + b.getName()+ "? It will take " + distance/10 + " energy." , "Move zone", JOptionPane.YES_NO_OPTION);
 		if (yesNo == JOptionPane.YES_OPTION){
 			if (this.getEnergy() < distance/10){
@@ -622,7 +650,21 @@ java.io.Serializable {
 		});
 		btnTest_1.setBounds(19, 180, 117, 29);
 		panelMenuL.add(btnTest_1);
+		
+		JRadioButton rdbtnEasy = new JRadioButton("Easy", true);
+		rdbtnEasy.setBounds(494, 54, 141, 23);
+		panelMenuL.add(rdbtnEasy);
+		
+		JRadioButton rdbtnHard = new JRadioButton("Hard", false);
+		rdbtnHard.setBounds(494, 87, 141, 23);
+		panelMenuL.add(rdbtnHard);
+		ButtonGroup b = new ButtonGroup();
+		b.add(rdbtnEasy);
+		b.add(rdbtnHard);
+		this.rdbtnEasy = rdbtnEasy;
+		this.rdbtnHard = rdbtnHard;
 
+		
 		JPanel panelFight = new JPanel();
 		contentPane.add(panelFight, "name_1429893385711104000");
 		panelFight.setLayout(null);
@@ -651,6 +693,7 @@ java.io.Serializable {
 		});
 		btnSave.setBounds(408, 490, 117, 29);
 		panelGameL.add(btnSave);
+		this.btnSave = btnSave;
 		CreateMapButtons();
 
 
@@ -679,7 +722,12 @@ java.io.Serializable {
 		JButton btnSleep_1 = new JButton("Sleep");
 		btnSleep_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				startSleep();
+				if (btnSleep.getText() == "Awake"){
+					endNewSleep();
+				}else{
+					startNewSleep();
+				}
+				//startSleep();
 			}
 		});
 		btnSleep_1.setBounds(408, 381, 117, 29);
@@ -694,6 +742,7 @@ java.io.Serializable {
 		});
 		btnOpenshop.setBounds(418, 531, 94, 27);
 		panelGameL.add(btnOpenshop);
+		this.btnOpenshop = btnOpenshop;
 
 		JProgressBar progressBarStatus_1 = new JProgressBar();
 		progressBarStatus_1.setStringPainted(true);

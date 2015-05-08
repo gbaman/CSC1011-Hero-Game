@@ -1,6 +1,7 @@
 package csc1011;
 
-public abstract class Items {
+public abstract class Items implements
+java.io.Serializable {
 	
     private String name;
     private String code;
@@ -20,7 +21,7 @@ public abstract class Items {
         this.code = code;
     }
     
-    abstract public int getModifier();
+    abstract public double getModifier();
     
     abstract public void PurchaseAction();
 

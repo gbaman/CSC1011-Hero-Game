@@ -1,6 +1,7 @@
 package csc1011;
 
-public class Location {
+public class Location implements
+java.io.Serializable {
 
 	public Location(int xLoc, int yLoc, String name) {
 		super();

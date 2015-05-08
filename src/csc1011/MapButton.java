@@ -1,10 +1,9 @@
 package csc1011;
 
-import javax.swing.Action;
-import javax.swing.Icon;
 import javax.swing.JButton;
 
-public class MapButton extends JButton {
+public class MapButton extends JButton implements
+java.io.Serializable {
 
 	public String getName() {
 		return this.CLocation.getName();

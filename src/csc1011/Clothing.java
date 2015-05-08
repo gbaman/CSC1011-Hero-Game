@@ -1,10 +1,11 @@
 package csc1011;
 
-public class Clothing extends Items {
-	int fightSuccess;
+public class Clothing extends Items implements
+java.io.Serializable {
+	double fightSuccess;
 	
 
-	public Clothing(String name, String code, int price, int fightSuccess) {
+	public Clothing(String name, String code, int price, double fightSuccess) {
 		super(name, code);
 		this.fightSuccess = fightSuccess;
 		this.setPrice(price); 
@@ -12,7 +13,7 @@ public class Clothing extends Items {
 	}
 
 	@Override
-	public int getModifier() {
+	public double getModifier() {
 		return this.fightSuccess;
 	}
 

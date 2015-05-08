@@ -12,6 +12,20 @@ java.io.Serializable {
 	ArrayList<Items> InventoryArmor;
 	int money = 0;
 	Location CLocation;
+	private int SaveActionBar;
+	private int SaveEnergyBar;
+	private ArrayList<MapButton> SaveMapButtons;
+	ArrayList<Items> InventoryGadget;
+	String Name = null;
+
+
+	public ArrayList<MapButton> getSaveMapButtons() {
+		return SaveMapButtons;
+	}
+
+	public void setSaveMapButtons(ArrayList<MapButton> saveMapButtons) {
+		SaveMapButtons = saveMapButtons;
+	}
 
 	public void setLocation(Location l){
 		this.CLocation = l;
@@ -53,8 +67,6 @@ java.io.Serializable {
 		InventoryGadget = inventoryGadget;
 	}
 
-	ArrayList<Items> InventoryGadget;
-	String Name = null;
 	public String getName() {
 		return Name;
 	}
@@ -62,14 +74,6 @@ java.io.Serializable {
 	public void setName(String name) {
 		Name = name;
 	}
-
-	int SaveActionBar;
-	int SaveEnergyBar;
-	
-
-	
-	
-	
 	
 	public int getSaveActionBar() {
 		return SaveActionBar;

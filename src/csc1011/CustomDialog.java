@@ -69,7 +69,8 @@ public class CustomDialog extends JDialog {
 		ImageIcon imgCrime = new ImageIcon(getClass().getResource("/Crime-Pix.jpg"));
 		this.lblCrimeIcon.setIcon(imgCrime);
 		this.setTitle("Crime happening!");
-		Thread DialogCloser = new Thread(new DialogClose(this, 5, "<html>\nA crime is being commited at the docks! <br>\nWould you like to fight it?"));
+		String location = this.m.c.CLocation.getName();
+		Thread DialogCloser = new Thread(new DialogClose(this, 5, "<html>\nA crime is being commited at the " + location + "! <br>\nWould you like to fight it?"));
 		DialogCloser.start();
 		this.DialogCloser = DialogCloser;
 		//this.PanelCrimeGen.setVisible(true);
@@ -98,32 +99,42 @@ public class CustomDialog extends JDialog {
 
 	}
 
-	private DefaultListModel<Items> checkItemsNotBought(DefaultListModel<Items> a){
-		
-		for (int count = 0; count < this.m.c.InventoryArmor.size(); count++) {
-			System.out.println("I own " + this.m.c.InventoryArmor.get(count).getName());
+	private DefaultListModel<Items> checkItemsNotBought(DefaultListModel<Items> a, String type){
+		ArrayList<Items> PlayerList;
+		if (type.equals("Gadget")){
+			PlayerList = this.m.c.InventoryGadget;
+		} else {
+			PlayerList = this.m.c.InventoryArmor;
 		}
-		
+
+		for (int count = 0; count < PlayerList.size(); count++) {
+			System.out.println("I own " + PlayerList.get(count).getName());
+		}
+
 		ArrayList<Integer> toRemove = new ArrayList<Integer>();
 		for (int count = 0; count < a.size(); count++) {
 			Items toCheck = a.getElementAt(count);
 			//System.out.println("Are these the same? " + toCheck.getName() + " " + this.m.c.InventoryArmor.) ;
-			Boolean DoesContain = this.m.c.InventoryArmor.contains(toCheck);
+			Boolean DoesContain = PlayerList.contains(toCheck);
 			System.out.println(DoesContain + " " + toCheck.getName());
-			
-			for (int count2 = 0; count2 < this.m.c.InventoryArmor.size(); count2++) {
-				if (this.m.c.InventoryArmor.get(count2).getName() == toCheck.getName() ){
-					System.out.println("I am going to remove " + this.m.c.InventoryArmor.get(count).getName());
+
+			for (int count2 = 0; count2 < PlayerList.size(); count2++) {
+				String NameToCheckMyInv = PlayerList.get(count2).getName();
+				String NameToCheck = toCheck.getName();
+				if (NameToCheckMyInv.equals(NameToCheck)){
+					//System.out.println("I am going to remove " + PlayerList.get(count).getName());
+					//toRemove.add(count);
+					//System.out.println("I am going to remove " + PlayerList.get(count - 1).getName());
 					toRemove.add(count);
 				}	
 			}
-			
+
 		}
 		if (toRemove.size() > 0){
 			for (int count = toRemove.size(); count > 0; count--) {
 				a.remove(toRemove.get(count-1));
 				//System.out.println("Removing " + a.getElementAt(toRemove.get(count)));
-			
+
 			}
 		}
 		System.out.println("a is long " + a.getSize());
@@ -141,13 +152,18 @@ public class CustomDialog extends JDialog {
 
 		DefaultListModel<Items> ArmorListModel = new DefaultListModel<>();
 		ArmorListModel.addElement(new Clothing("Suit", "Suit", 20, 10));
-		
+
 		DefaultListModel<Items> GadgetListModel = new DefaultListModel<>();
-		
-		ArmorListModel = checkItemsNotBought(ArmorListModel);
+		GadgetListModel.addElement(new Gadget("Slow Car", "Slow-Car", 150, 0.9, Gadget.ModifierType.Travel));
+		GadgetListModel.addElement(new Gadget("Fast car", "Fast-Car", 300, 0.75, Gadget.ModifierType.Travel));
+
+
+
+
+		//ArmorListModel = checkItemsNotBought(ArmorListModel);
 		JList<Items> FoodList = new JList<>(FoodListModel);
-		JList<Items> ArmorList = new JList<>(checkItemsNotBought(ArmorListModel));
-		JList<Items> GadgetList = new JList<>(checkItemsNotBought(GadgetListModel));
+		JList<Items> ArmorList = new JList<>(checkItemsNotBought(ArmorListModel, "Armor"));
+		JList<Items> GadgetList = new JList<>(checkItemsNotBought(GadgetListModel, "Gadget"));
 		FoodList.setCellRenderer(new ShopItemRenderer());
 		ArmorList.setCellRenderer(new ShopItemRenderer());
 		GadgetList.setCellRenderer(new ShopItemRenderer());
@@ -187,7 +203,7 @@ public class CustomDialog extends JDialog {
 	private Boolean CanAfford(Items a){
 		int cost = a.getPrice();
 		int money = this.m.c.getMoney();
-		if ((money - cost) > 0){
+		if ((money - cost) >= 0){
 			m.c.setMoney(money - cost);
 			return true;
 		}else{
@@ -200,47 +216,72 @@ public class CustomDialog extends JDialog {
 
 	private void BuyItem(String type){
 		System.out.println("hi");
+		Boolean Quit = false;
 		//System.out.println(FoodList.getSelectedIndex());
 		//System.out.println(toBuy.getPrice());
 		//System.out.println(toBuy.getPrice());
 		switch (type) {
 		case "Armor" :{
 			Items toBuy = ArmorList.getSelectedValue();
-			if (this.CanAfford(toBuy)){
-				ArrayList<Items> I =m.c.getInventoryArmor() ;
-				I.add(toBuy);
+			if (toBuy == null){
+				JOptionPane.showMessageDialog(null, "No selection made!", "Make Selection", JOptionPane.ERROR_MESSAGE);
+				Quit = true;
+				DisposeDialog(false);
+			}else{
 
-				m.c.setInventoryArmor(I);
-				JOptionPane.showMessageDialog(null, toBuy.getName() + " has been purchased for £" + toBuy.getPrice() + ". £" + this.m.c.getMoney() + " remaining." , "Purchased", JOptionPane.INFORMATION_MESSAGE);
+
+				if (this.CanAfford(toBuy)){
+					ArrayList<Items> I =m.c.getInventoryArmor() ;
+					I.add(toBuy);
+
+					m.c.setInventoryArmor(I);
+					JOptionPane.showMessageDialog(null, toBuy.getName() + " has been purchased for £" + toBuy.getPrice() + ". £" + this.m.c.getMoney() + " remaining." , "Purchased", JOptionPane.INFORMATION_MESSAGE);
+					this.ArmorListModel.removeElement(toBuy);
+				}
 			}
 			break;
 		}
 		case "Food" :{
 			Items toBuy = FoodList.getSelectedValue();
-			if (this.CanAfford(toBuy)){
-				this.m.setEnergy(this.m.getEnergy() + toBuy.getModifier());
-				JOptionPane.showMessageDialog(null, toBuy.getName() + "has been purchased for £" + toBuy.getPrice() + ". £" + this.m.c.getMoney() + " remaining." , "Purchased", JOptionPane.INFORMATION_MESSAGE);
-
+			if (toBuy == null){
+				JOptionPane.showMessageDialog(null, "No selection made!", "Make Selection", JOptionPane.ERROR_MESSAGE);
+				Quit = true;
+				DisposeDialog(false);
+			}else{
+				if (this.CanAfford(toBuy)){
+					this.m.setEnergy((this.m.getEnergy()) + (int) toBuy.getModifier());
+					JOptionPane.showMessageDialog(null, toBuy.getName() + "has been purchased for £" + toBuy.getPrice() + ". £" + this.m.c.getMoney() + " remaining." , "Purchased", JOptionPane.INFORMATION_MESSAGE);
+				}
 			}
 			break;
 		}
 		case "Gadget" :{
 			Items toBuy = GadgetList.getSelectedValue();
-			if (this.CanAfford(toBuy)){
-				ArrayList<Items> I =m.c.getInventoryGadget() ;
-				I.add(toBuy);
+			if (toBuy == null){
+				JOptionPane.showMessageDialog(null, "No selection made!", "Make Selection", JOptionPane.ERROR_MESSAGE);
+				Quit = true;
+				DisposeDialog(false);
+			}else{
+				if (this.CanAfford(toBuy)){
+					ArrayList<Items> I =m.c.getInventoryGadget() ;
+					I.add(toBuy);
 
-				m.c.setInventoryGadget(I);
-				JOptionPane.showMessageDialog(null, toBuy.getName() + "has been purchased for £" + toBuy.getPrice() + ". £" + this.m.c.getMoney() + " remaining." , "Purchased", JOptionPane.INFORMATION_MESSAGE);
+					m.c.setInventoryGadget(I);
+					JOptionPane.showMessageDialog(null, toBuy.getName() + "has been purchased for £" + toBuy.getPrice() + ". £" + this.m.c.getMoney() + " remaining." , "Purchased", JOptionPane.INFORMATION_MESSAGE);
+					this.GadgetListModel.removeElement(toBuy);
+				}
 			}
 			break;
 		}
 
 
 		}
-		this.setLabelMoney(this.m.c.getMoney());
-		System.out.println(this.FoodList.getSelectedValuesList());
-		this.DisplayShopList(m);
+		if (Quit == false){
+			this.setLabelMoney(this.m.c.getMoney());
+			System.out.println(this.FoodList.getSelectedValuesList());
+			System.out.println("Displaying the shop again");
+			this.DisplayShopList(m);
+		}
 	}
 
 	/**
@@ -336,6 +377,11 @@ public class CustomDialog extends JDialog {
 			panelShopOver.add(btnBuyArmor);
 
 			JButton btnBuyGadget = new JButton("Buy selected gadget");
+			btnBuyGadget.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					BuyItem("Gadget");
+				}
+			});
 			btnBuyGadget.setBounds(465, 462, 150, 27);
 			panelShopOver.add(btnBuyGadget);
 
@@ -343,7 +389,7 @@ public class CustomDialog extends JDialog {
 			labelMoney.setBounds(39, 540, 57, 15);
 			panelShopOver.add(labelMoney);
 			this.labelMoney = labelMoney;
-			
+
 			JButton btnBackToGame = new JButton("Back to game");
 			btnBackToGame.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {

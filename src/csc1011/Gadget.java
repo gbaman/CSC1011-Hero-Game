@@ -1,16 +1,28 @@
 package csc1011;
 
-public class Gadget extends Items {
-
-	public Gadget(String name, String code) {
+public class Gadget extends Items implements
+java.io.Serializable {
+	double modifier;
+	
+	public static enum ModifierType {
+		Travel, FightEnergy, Action
+	}
+	
+	public Gadget(String name, String code, int price, double modifier, ModifierType mod) {
 		super(name, code);
-		// TODO Auto-generated constructor stub
+		this.setPrice(price); 
+		switch (mod){
+		case Travel : this.setModifierText("Travel costs x"); break;
+		case FightEnergy : this.setModifierText("Crime fight energy cost x"); break;
+		case Action : this.setModifierText("Action generated x"); break;
+		}
+		this.modifier = modifier;
 	}
 
 	@Override
-	public int getModifier() {
+	public double getModifier() {
 		// TODO Auto-generated method stub
-		return 0;
+		return this.modifier;
 	}
 
 	@Override
@@ -18,5 +30,7 @@ public class Gadget extends Items {
 		// TODO Auto-generated method stub
 		
 	}
+	
+	
 
 }
