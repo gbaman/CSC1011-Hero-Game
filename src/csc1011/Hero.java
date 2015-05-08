@@ -31,9 +31,9 @@ public class Hero extends Character {
 	
 	private ArrayList<Crime> CreateCrimesList(){
 		ArrayList<Crime> CrimeList = new ArrayList<Crime>();
-		CrimeList.add(new Crime("Robbery", "Bob",Crime.CrimeSeverityLevel.Low, Crime.CrimeLocationsAvailable.Docks));
-		CrimeList.add(new Crime("Murder", "Brian",Crime.CrimeSeverityLevel.Medium, Crime.CrimeLocationsAvailable.Suburbs));
-		CrimeList.add(new Crime("Pickpocket", "Phil",Crime.CrimeSeverityLevel.Low, Crime.CrimeLocationsAvailable.Downtown));
+		CrimeList.add(new Crime("Robbery",Crime.CrimeSeverityLevel.easy));
+		CrimeList.add(new Crime("Murder",Crime.CrimeSeverityLevel.medium));
+		CrimeList.add(new Crime("Pickpocket",Crime.CrimeSeverityLevel.difficult));
 		
 		
 		return CrimeList;

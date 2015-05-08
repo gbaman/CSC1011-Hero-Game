@@ -3,20 +3,31 @@ package csc1011;
 public class Crime implements
 java.io.Serializable {
 
-	public Crime(String name, String commitedBy,
-			CrimeSeverityLevel crimeSeverity,
-			CrimeLocationsAvailable crimeLocation) {
+	public Crime(String name,
+			CrimeSeverityLevel crimeSeverity) {
 		super();
 		this.name = name;
-		CommitedBy = commitedBy;
 		CrimeSeverity = crimeSeverity;
-		CrimeLocation = crimeLocation;
 	}
 
 	String name;
-	String CommitedBy;
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public CrimeSeverityLevel getCrimeSeverity() {
+		return CrimeSeverity;
+	}
+
+	public void setCrimeSeverity(CrimeSeverityLevel crimeSeverity) {
+		CrimeSeverity = crimeSeverity;
+	}
+
 	CrimeSeverityLevel CrimeSeverity;
-	CrimeLocationsAvailable CrimeLocation;
 	int CrimeExpire = 20;
 	
 	
@@ -29,11 +40,8 @@ java.io.Serializable {
 	}
 
 	public enum CrimeSeverityLevel {
-		Low, Medium, Severe
+		easy, medium, difficult
 	}
 	
-	public enum CrimeLocationsAvailable{
-		Downtown, Central_Bank, Suburbs, Docks
-	}
 	
 }

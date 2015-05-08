@@ -64,13 +64,25 @@ public class CustomDialog extends JDialog {
 	}
 
 	public String CrimeDialog(MainMenu m){
+		
+		ArrayList<MapButton> CrimeList = m.getMapButtons();
+		Crime TheCrime = null;
+		for (int count = 0; count < CrimeList.size(); count++) {
+			if (m.c.CLocation.getName().equals(CrimeList.get(count).getCLocation().getName())){
+				TheCrime = CrimeList.get(count).getCrime();
+			}
+		}
+		if (TheCrime == null){
+			TheCrime = new Crime("crime", Crime.CrimeSeverityLevel.easy);
+		}
+		System.out.println(TheCrime.getName());
 		this.setSize(350,300);
 		System.out.println("Crime Dialog!");
 		ImageIcon imgCrime = new ImageIcon(getClass().getResource("/Crime-Pix.jpg"));
 		this.lblCrimeIcon.setIcon(imgCrime);
 		this.setTitle("Crime happening!");
 		String location = this.m.c.CLocation.getName();
-		Thread DialogCloser = new Thread(new DialogClose(this, 5, "<html>\nA crime is being commited at the " + location + "! <br>\nWould you like to fight it?"));
+		Thread DialogCloser = new Thread(new DialogClose(this, 5, "<html>\nA " + TheCrime.getName() + " is taking place at the " + location + "! <br>\nIt is a " + TheCrime.getCrimeSeverity() + " level difficulty. <br>\n Would you like to assist?"));
 		DialogCloser.start();
 		this.DialogCloser = DialogCloser;
 		//this.PanelCrimeGen.setVisible(true);
@@ -250,7 +262,7 @@ public class CustomDialog extends JDialog {
 			}else{
 				if (this.CanAfford(toBuy)){
 					this.m.setEnergy((this.m.getEnergy()) + (int) toBuy.getModifier());
-					JOptionPane.showMessageDialog(null, toBuy.getName() + "has been purchased for £" + toBuy.getPrice() + ". £" + this.m.c.getMoney() + " remaining." , "Purchased", JOptionPane.INFORMATION_MESSAGE);
+					JOptionPane.showMessageDialog(null, toBuy.getName() + " has been purchased for £" + toBuy.getPrice() + ". £" + this.m.c.getMoney() + " remaining." , "Purchased", JOptionPane.INFORMATION_MESSAGE);
 				}
 			}
 			break;
@@ -267,7 +279,7 @@ public class CustomDialog extends JDialog {
 					I.add(toBuy);
 
 					m.c.setInventoryGadget(I);
-					JOptionPane.showMessageDialog(null, toBuy.getName() + "has been purchased for £" + toBuy.getPrice() + ". £" + this.m.c.getMoney() + " remaining." , "Purchased", JOptionPane.INFORMATION_MESSAGE);
+					JOptionPane.showMessageDialog(null, toBuy.getName() + " has been purchased for £" + toBuy.getPrice() + ". £" + this.m.c.getMoney() + " remaining." , "Purchased", JOptionPane.INFORMATION_MESSAGE);
 					this.GadgetListModel.removeElement(toBuy);
 				}
 			}
